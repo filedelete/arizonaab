@@ -101,7 +101,7 @@ select {
   background-color: rgba(66, 165, 245, 0.25);
   transform: scale(0.98);
 }
-#copy-toast, #update-toast {
+#copy-toast {
   position: fixed;
   bottom: 30px;
   right: 30px;
@@ -141,7 +141,7 @@ body.light-theme .btn, body.light-theme .file-label {
   background-color: #1976d2;
   color: white;
 }
-#copy-toast.show, #update-toast.show {
+#copy-toast.show {
   opacity: 1;
   transform: translateY(0);
 }
@@ -160,6 +160,7 @@ body.light-theme .btn, body.light-theme .file-label {
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   z-index: 9999;
 }
+
 @keyframes fadeInText {
   from {opacity: 0; transform: translateY(10px);}
   to {opacity: 1; transform: translateY(0);}
@@ -174,12 +175,13 @@ body.light-theme .btn, body.light-theme .file-label {
   to {opacity: 1; transform: translateX(0);}
 }
 @keyframes gradientFlow {
-  0% {background-position: 0% 50;}
-  25% {background-position: 50% 50;}
+  0% {background-position: 0% 50%;}
+  25% {background-position: 50% 50%;}
   50% {background-position: 100% 50%;}
-  75% {background-position: 50% 50;}
-  100% {background-position: 0% 50;}
+  75% {background-position: 50% 50%;}
+  100% {background-position: 0% 50%;}
 }
+
 @media (max-width: 768px) {
   .app-container { flex-direction: column; }
   #left-panel, #right-panel {
@@ -188,54 +190,4 @@ body.light-theme .btn, body.light-theme .file-label {
     box-shadow: none;
   }
   #output-text { font-size: 14px; }
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 99999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease-out;
-}
-.material-icons {
-  font-size: 20px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.modal-content {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  padding: 24px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-  text-align: center;
-  animation: slideInUp 0.4s ease-out;
-}
-.modal-content p {
-  margin-bottom: 20px;
-  font-size: 1.2rem;
-}
-.modal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-.cancel-btn {
-  background-color: #757575;
-}
-.cancel-btn:hover {
-  background-color: #616161;
-}
-@keyframes slideInUp {
-  from {transform: translateY(40px); opacity: 0;}
-  to {transform: translateY(0); opacity: 1;}
 }
