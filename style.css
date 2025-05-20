@@ -1,4 +1,7 @@
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #121212;
@@ -7,51 +10,75 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
+
+body.light-theme {
+  background-color: #f0f0f0;
+  color: #121212;
+}
+
+#left-panel, #right-panel, select, #output-text, .file-label, .btn {
+  transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
+
+#toggle-theme .material-icons,
+#toggle-theme .material-label {
+  transition: color 0.4s ease, opacity 0.4s ease;
+}
+
 .app-container {
   display: flex;
   flex: 1;
-  animation: fadeIn 0.6s ease forwards;
   flex-direction: row;
+  animation: fadeIn 0.6s ease forwards;
 }
+
 #left-panel, #right-panel {
-  padding: 24px;
   display: flex;
   flex-direction: column;
+  padding: 24px;
   animation-duration: 0.6s;
   animation-timing-function: ease;
   animation-fill-mode: forwards;
 }
+
 #left-panel {
   background-color: #1e1e1e;
   width: 320px;
   box-shadow: 2px 0 8px rgba(0,0,0,0.3);
   animation-name: slideInLeft;
 }
+
 #right-panel {
   flex: 1;
   background-color: #121212;
   animation-name: slideInRight;
 }
+
 h2 {
   font-size: 1.6rem;
   text-align: center;
   margin-bottom: 24px;
   color: #90caf9;
 }
+
 label {
-  margin-bottom: 8px;
   display: block;
+  margin-bottom: 8px;
   color: #b0bec5;
 }
-input[type="file"] { display: none; }
 
+input[type="file"] {
+  display: none;
+}
+
+/* Кнопки та ярлики файлів */
 .file-label, .btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   justify-content: center;
+  gap: 10px;
   padding: 12px 20px;
   margin-bottom: 16px;
   background: linear-gradient(135deg, #1976d2, #42a5f5);
@@ -62,19 +89,22 @@ input[type="file"] { display: none; }
   font-weight: 600;
   border: none;
   box-shadow: 0 4px 12px rgba(66, 165, 245, 0.6);
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
   user-select: none;
   text-align: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
 }
+
 .file-label:hover, .btn:hover {
   background: linear-gradient(135deg, #1565c0, #64b5f6);
   box-shadow: 0 6px 18px rgba(100, 181, 246, 0.7);
   transform: translateY(-2px);
 }
+
 .file-label:active, .btn:active {
   transform: translateY(0);
   box-shadow: 0 3px 10px rgba(66, 165, 245, 0.5);
 }
+
 .file-label:focus-visible, .btn:focus-visible {
   outline: 2px solid #90caf9;
   outline-offset: 3px;
@@ -90,6 +120,7 @@ select {
   color: #f0f0f0;
   font-size: 1rem;
 }
+
 #output-text {
   flex: 1;
   padding: 16px;
@@ -100,25 +131,29 @@ select {
   font-size: 15px;
   line-height: 1.4;
 }
+
 #output-text span {
   display: block;
-  opacity: 0;
-  animation: fadeInText 0.5s forwards;
-  cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease, background-color 0.3s ease;
   padding: 4px 8px;
   border-radius: 6px;
+  opacity: 0;
+  cursor: pointer;
+  animation: fadeInText 0.5s forwards;
+  transition: color 0.3s ease, transform 0.2s ease, background-color 0.3s ease;
 }
+
 #output-text span:hover {
   color: #90caf9 !important;
-  transform: translateX(5px);
   background-color: rgba(144, 202, 249, 0.15);
+  transform: translateX(5px);
 }
+
 #output-text span.active {
   color: #42a5f5 !important;
   background-color: rgba(66, 165, 245, 0.25);
   transform: scale(0.98);
 }
+
 #copy-toast {
   position: fixed;
   bottom: 30px;
@@ -131,61 +166,15 @@ select {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease, transform 0.5s ease;
-  z-index: 99999;
   transform: translateY(20px);
-}
-body.light-theme {
-  background-color: #f4f4f4;
-  color: #1e1e1e;
-}
-body.light-theme #left-panel,
-body.light-theme #right-panel {
-  background-color: #fff;
-}
-body.light-theme h2 {
-  color: #1976d2;
-}
-body.light-theme label {
-  color: #333;
-}
-body.light-theme select {
-  background-color: #eee;
-  color: #1e1e1e;
-}
-body.light-theme #output-text {
-  background-color: #f9f9f9;
-}
-
-/* Светлая тема - кнопки */
-body.light-theme .file-label, 
-body.light-theme .btn {
-  background: linear-gradient(135deg, #42a5f5, #1976d2);
-  color: white;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.6);
-  font-weight: 600;
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
-}
-body.light-theme .file-label:hover,
-body.light-theme .btn:hover {
-  background: linear-gradient(135deg, #64b5f6, #1565c0);
-  box-shadow: 0 6px 18px rgba(21, 101, 192, 0.7);
-  transform: translateY(-2px);
-}
-body.light-theme .file-label:active,
-body.light-theme .btn:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(25, 118, 210, 0.5);
-}
-body.light-theme .file-label:focus-visible,
-body.light-theme .btn:focus-visible {
-  outline: 2px solid #1976d2;
-  outline-offset: 3px;
+  z-index: 99999;
 }
 
 #copy-toast.show {
   opacity: 1;
   transform: translateY(0);
 }
+
 .corner-gradient {
   position: fixed;
   bottom: 10px;
@@ -201,35 +190,135 @@ body.light-theme .btn:focus-visible {
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   z-index: 9999;
 }
+
+/* Теми */
+body.light-theme {
+  background-color: #f4f4f4;
+  color: #1e1e1e;
+}
+
+body.light-theme #left-panel,
+body.light-theme #right-panel {
+  background-color: #fff;
+}
+
+body.light-theme h2 {
+  color: #1976d2;
+}
+
+body.light-theme label {
+  color: #333;
+}
+
+body.light-theme select {
+  background-color: #eee;
+  color: #1e1e1e;
+}
+
+body.light-theme #output-text {
+  background-color: #f9f9f9;
+}
+
+body.light-theme .file-label, 
+body.light-theme .btn {
+  background: linear-gradient(135deg, #42a5f5, #1976d2);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.6);
+  color: white;
+  font-weight: 600;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+}
+
+body.light-theme .file-label:hover,
+body.light-theme .btn:hover {
+  background: linear-gradient(135deg, #64b5f6, #1565c0);
+  box-shadow: 0 6px 18px rgba(21, 101, 192, 0.7);
+  transform: translateY(-2px);
+}
+
+body.light-theme .file-label:active,
+body.light-theme .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(25, 118, 210, 0.5);
+}
+
+body.light-theme .file-label:focus-visible,
+body.light-theme .btn:focus-visible {
+  outline: 2px solid #1976d2;
+  outline-offset: 3px;
+}
+
+/* Анімації */
 @keyframes fadeInText {
-  from {opacity: 0; transform: translateY(10px);}
-  to {opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes slideInLeft {
-  from {opacity: 0; transform: translateX(-30px);}
-  to {opacity: 1; transform: translateX(0);}
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
 @keyframes slideInRight {
-  from {opacity: 0; transform: translateX(30px);}
-  to {opacity: 1; transform: translateX(0);}
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
 @keyframes gradientFlow {
-  0% {background-position: 0% 50%;}
-  25% {background-position: 50% 50%;}
-  50% {background-position: 100% 50%;}
-  75% {background-position: 50% 50%;}
-  100% {background-position: 0% 50%;}
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
+
+/* Адаптивність */
 @media (max-width: 768px) {
-  .app-container { flex-direction: column; }
+  .app-container {
+    flex-direction: column;
+  }
   #left-panel, #right-panel {
     width: 100%;
     padding: 16px 12px;
     box-shadow: none;
   }
-  #output-text { font-size: 14px; }
+  #output-text {
+    font-size: 14px;
+  }
 }
+
 .material-icons {
   font-size: 20px;
   line-height: 1;
