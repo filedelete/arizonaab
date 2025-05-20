@@ -121,38 +121,3 @@ function displayResults(results) {
         outputText.appendChild(span);
     });
 }
-
-// Проверка новой версии на GitHub
-window.addEventListener('DOMContentLoaded', () => {
-    fetch('https://raw.githubusercontent.com/filedelete/Arzabcheck/main/abcheck.txt')
-        .then(response => response.text())
-        .then(remoteData => {
-            const localKey = localStorage.getItem('local_version_key');
-            const newKey = remoteData.trim().slice(0, 200);
-            if (newKey && newKey !== localKey) {
-                const toast = document.getElementById('update-toast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 5000);
-                localStorage.setItem('local_version_key', newKey);
-            }
-        })
-        .catch(err => console.error('Ошибка при проверке обновления:', err));
-});
-
-const updateDialog = document.getElementById('update-dialog');
-const openDialogBtn = document.getElementById('download-update-btn');
-const confirmDownload = document.getElementById('confirm-download');
-const cancelDownload = document.getElementById('cancel-download');
-
-openDialogBtn.addEventListener('click', () => {
-    updateDialog.style.display = 'flex';
-});
-
-cancelDownload.addEventListener('click', () => {
-    updateDialog.style.display = 'none';
-});
-
-confirmDownload.addEventListener('click', () => {
-    window.open('https://raw.githubusercontent.com/filedelete/Arzabcheck/main/abcheck.txt', '_blank');
-    updateDialog.style.display = 'none';
-});
