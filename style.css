@@ -221,7 +221,7 @@ body.light-theme #output-text {
   background-color: #f9f9f9;
 }
 
-body.light-theme .file-label, 
+body.light-theme .file-label,
 body.light-theme .btn {
   background: linear-gradient(135deg, #42a5f5, #1976d2);
   box-shadow: 0 4px 12px rgba(25, 118, 210, 0.6);
@@ -248,6 +248,59 @@ body.light-theme .btn:focus-visible {
   outline: 2px solid #1976d2;
   outline-offset: 3px;
 }
+
+/* Стилі для кнопок-іконок мов */
+#language-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.lang-icon-btn {
+  background-color: #424242; /* Темний фон */
+  color: #e0e0e0; /* Світлий текст */
+  border: 2px solid transparent;
+  padding: 8px 12px; /* Менший padding */
+  cursor: pointer;
+  border-radius: 8px; /* Більші заокруглення */
+  font-size: 0.9rem; /* Трохи менший шрифт */
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  min-width: 40px; /* Мінімальна ширина для кращого вигляду */
+  text-align: center;
+}
+
+.lang-icon-btn:hover {
+  background-color: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.lang-icon-btn.active {
+  background-color: #1976d2; /* Синій для активної кнопки */
+  border-color: #42a5f5;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(66, 165, 245, 0.7);
+}
+
+body.light-theme .lang-icon-btn {
+  background-color: #e0e0e0; /* Світлий фон */
+  color: #333; /* Темний текст */
+}
+
+body.light-theme .lang-icon-btn:hover {
+  background-color: #d0d0d0;
+}
+
+body.light-theme .lang-icon-btn.active {
+  background-color: #1976d2;
+  border-color: #1976d2;
+  color: white;
+  box-shadow: 0 0 15px rgba(25, 118, 210, 0.7);
+}
+
 
 /* Анімації */
 @keyframes fadeInText {
