@@ -1,9 +1,10 @@
-const fileInput = document.getElementById('file-input');
-const actionSelect = document.getElementById('action-select');
-const timeSelect = document.getElementById('time-select');
-const outputText = document.getElementById('output-text');
-const toggleThemeBtn = document.getElementById('toggle-theme');
-const copyToast = document.getElementById('copy-toast');
+const $ = id => document.getElementById(id);
+const fileInput = $('file-input');
+const actionSelect = $('action-select');
+const timeSelect = $('time-select');
+const outputText = $('output-text');
+const toggleThemeBtn = $('toggle-theme');
+const copyToast = $('copy-toast');
 
 let logData = [];
 let isDarkTheme = true;
@@ -21,7 +22,9 @@ const actionMap = [
   { keyword: "пополнил счет", label: "Пополнил счет организации" },
   { keyword: "выдал премию", label: "Выдал премию" },
   { keyword: "назначил собеседование", label: "Назначил собеседование" },
-  { keyword: "отменил собеседование", label: "Отменил собеседование" }
+  { keyword: "отменил собеседование", label: "Отменил собеседование" },
+  { keyword: "выпустил из тюрьмы заключенного", label: "Выпустил заключенного" },
+  { keyword: "повысил срок заключенному", label: "Повысил срок заключенному" }
 ];
 
 const colors = {
@@ -38,28 +41,24 @@ const colors = {
   "Пополнил счет организации": "#37cc6b",
   "Выдал премию": "#37cc6b",
   "Назначил собеседование": "#376ecc",
+  "Выпустил заключенного": "#4ca3d9",
+  "Повысил срок заключенному": "#d9674c",
   "Отменил собеседование": "#f9a30a"
 };
 
 toggleThemeBtn.addEventListener('click', () => {
-    isDarkTheme = !isDarkTheme;
-    document.body.classList.toggle('light-theme', !isDarkTheme);
+  isDarkTheme = !isDarkTheme;
+  document.body.classList.toggle('light-theme', !isDarkTheme);
 
-    const icon = toggleThemeBtn.querySelector('.material-icons');
-    const label = toggleThemeBtn.querySelector('.material-label');
+  const icon = toggleThemeBtn.querySelector('.material-icons');
+  const label = toggleThemeBtn.querySelector('.material-label');
 
-    // Плавне затухання
-    icon.style.opacity = '0';
-    label.style.opacity = '0';
-
-    setTimeout(() => {
-        icon.textContent = isDarkTheme ? 'brightness_6' : 'brightness_4';
-        label.textContent = isDarkTheme ? 'Сменить тему' : 'Вернуть тёмную тему';
-
-        // Плавне з’явлення
-        icon.style.opacity = '1';
-        label.style.opacity = '1';
-    }, 200);
+  icon.style.opacity = label.style.opacity = '0';
+  setTimeout(() => {
+    icon.textContent = isDarkTheme ? 'brightness_6' : 'brightness_4';
+    label.textContent = isDarkTheme ? 'Сменить тему' : 'Вернуть тёмную тему';
+    icon.style.opacity = label.style.opacity = '1';
+  }, 200);
 });
 
 fileInput.addEventListener('change', e => {
@@ -71,11 +70,11 @@ fileInput.addEventListener('change', e => {
     logData = target.result
       .split('\n')
       .map(line => {
-        const match = line.match(/^(\d+)\. \| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)$/);
-        if (!match) return null;
-        return { entry_number: match[1], timestamp: match[2], action: match[3].trim() };
+        const m = line.match(/^(\d+)\. \| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)$/);
+        return m ? { entry_number: m[1], timestamp: m[2], action: m[3].trim() } : null;
       })
       .filter(Boolean);
+
     alert("Файл успешно загружен");
     applyFilters();
   };
@@ -85,10 +84,8 @@ fileInput.addEventListener('change', e => {
 
 [actionSelect, timeSelect].forEach(el => el.addEventListener('change', applyFilters));
 
-function extractActionDetails(text) {
-  const found = actionMap.find(({ keyword }) => text.includes(keyword));
-  return found ? found.label : "Все действия";
-}
+const extractActionDetails = text => 
+  (actionMap.find(({ keyword }) => text.includes(keyword)) || {}).label || "Все действия";
 
 function applyFilters() {
   if (!logData.length) {
@@ -98,9 +95,17 @@ function applyFilters() {
 
   const selectedAction = actionSelect.value;
   const selectedTime = timeSelect.value;
-  const now = Date.now();
-  const timeMap = { week: 7, '2weeks': 14, '3weeks': 21, month: 30 };
-  const cutoff = now - (timeMap[selectedTime] || 0) * 86400000;
+  const timeMap = {
+  week: 7,
+  '2weeks': 14,
+  '3weeks': 21,
+  month: 30,
+  '2months': 60,
+  '3months': 90,
+  year: 365
+};
+
+  const cutoff = Date.now() - (timeMap[selectedTime] || 0) * 86400000;
 
   const filtered = logData.filter(entry => {
     const entryTime = new Date(entry.timestamp).getTime();
@@ -109,11 +114,11 @@ function applyFilters() {
     return (selectedAction === "Все действия" || type === selectedAction) && entryTime >= cutoff;
   });
 
-  if (!filtered.length) {
-    outputText.textContent = 'Нет записей, соответствующих выбранным фильтрам.';
-    return;
-  }
-  displayResults(filtered);
+  outputText.textContent = filtered.length
+    ? ""
+    : 'Нет записей, соответствующих выбранным фильтрам.';
+
+  if (filtered.length) displayResults(filtered);
 }
 
 function displayResults(results) {
@@ -135,9 +140,9 @@ function displayResults(results) {
         copyToast.classList.add('show');
         setTimeout(() => {
           copyToast.classList.remove('show');
-          copyToast.hidden = true;
+          setTimeout(() => (copyToast.hidden = true), 500);
         }, 1500);
-      });
+      }).catch(console.error);
     });
 
     outputText.appendChild(span);
