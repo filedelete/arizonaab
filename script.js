@@ -4,47 +4,93 @@ const actionSelect = $('action-select');
 const timeSelect = $('time-select');
 const outputText = $('output-text');
 const toggleThemeBtn = $('toggle-theme');
+const languageIconsContainer = $('language-icons');
 const copyToast = $('copy-toast');
 
 let logData = [];
 let isDarkTheme = true;
-
-const actionMap = [
-  { keyword: "уволил игрока", label: "Уволил игрока" },
-  { keyword: "подтверждает участие", label: "Подтверждает участие на мероприятие фракции" },
-  { keyword: "изменил ранг игрока", label: "Изменил ранг игрока" },
-  { keyword: "установил игроку", label: "Установил игроку тег" },
-  { keyword: "принял игрока", label: "Принял игрока в организацию" },
-  { keyword: "открыл общак", label: "Открыл склад организации" },
-  { keyword: "закрыл общак", label: "Закрыл склад организации" },
-  { keyword: "дал выговор", label: "Дал выговор игроку" },
-  { keyword: "снял выговор", label: "Снял выговор с игрока" },
-  { keyword: "пополнил счет", label: "Пополнил счет организации" },
-  { keyword: "выдал премию", label: "Выдал премию" },
-  { keyword: "назначил собеседование", label: "Назначил собеседование" },
-  { keyword: "отменил собеседование", label: "Отменил собеседование" },
-  { keyword: "выпустил из тюрьмы заключенного", label: "Выпустил заключенного" },
-  { keyword: "повысил срок заключенному", label: "Повысил срок заключенному" }
-];
+let currentLang = 'ru'; // Початкова мова
 
 const colors = {
-  "Все действия": "#d0d0d0", // Светло-серый фон для общего
-  "Принял игрока в организацию": "#2e7d32", // Темно-зеленый (успех)
-  "Уволил игрока": "#b71c1c", // Темно-красный (важное предупреждение)
-  "Подтверждает участие на мероприятие фракции": "#6a1b9a", // Пурпурный (официально, важно)
-  "Изменил ранг игрока": "#4527a0", // Тёмный индиго (ранги, статус)
-  "Установил игроку тег": "#9e9d24", // Оливковый (метка)
-  "Открыл склад организации": "#558b2f", // Тёмно-зеленый (доступ к складу)
-  "Закрыл склад организации": "#e64a19", // Терракотовый (закрытие)
-  "Дал выговор игроку": "#c62828", // Красный (выговор)
-  "Снял выговор с игрока": "#2e7d32", // Зеленый (снятие выговора)
-  "Пополнил счет организации": "#388e3c", // Ярко-зеленый (финансы)
-  "Выдал премию": "#00796b", // Бирюзовый (премия)
-  "Назначил собеседование": "#1976d2", // Ярко-синий (встреча)
-  "Отменил собеседование": "#f57c00", // Оранжевый (отмена)
-  "Выпустил заключенного": "#0288d1", // Голубой (освобождение)
-  "Повысил срок заключенному": "#d84315"  // Оранжево-красный (срок)
+  "Все действия": "#d0d0d0",
+  "Принял игрока в организацию": "#2e7d32",
+  "Уволил игрока": "#b71c1c",
+  "Подтверждает участие на мероприятие фракции": "#6a1b9a",
+  "Изменил ранг игрока": "#4527a0",
+  "Установил игроку тег": "#9e9d24",
+  "Открыл склад организации": "#558b2f",
+  "Закрыл склад организации": "#e64a19",
+  "Дал выговор игроку": "#c62828",
+  "Снял выговор с игрока": "#2e7d32",
+  "Пополнил счет организации": "#388e3c",
+  "Выдал премию": "#00796b",
+  "Назначил собеседование": "#1976d2",
+  "Отменил собеседование": "#f57c00",
+  "Выпустил заключенного": "#0288d1",
+  "Повысил срок заключенному": "#d84315"
 };
+
+function setLanguage(lang) {
+  document.querySelectorAll('[data-key]').forEach(element => {
+    const key = element.getAttribute('data-key');
+    if (translations[lang] && translations[lang][key]) {
+      element.textContent = translations[lang][key];
+    }
+  });
+
+  updateDynamicTexts(lang);
+  updateActiveLangIcon(lang);
+}
+
+function updateDynamicTexts(lang) {
+  const themeIcon = toggleThemeBtn.querySelector('.material-icons');
+  const themeLabel = toggleThemeBtn.querySelector('.material-label');
+  themeLabel.textContent = isDarkTheme ? translations[lang].toggle_theme : translations[lang].toggle_theme_light;
+  themeIcon.textContent = isDarkTheme ? 'brightness_6' : 'brightness_4';
+
+  const currentSelectedActionValue = actionSelect.value;
+  actionSelect.innerHTML = `<option value="${translations[lang].all_actions}" data-key="all_actions">${translations[lang].all_actions}</option>`;
+  
+  let foundMatchForCurrentAction = false;
+  actionMap.forEach(action => {
+    const option = document.createElement('option');
+    const translatedLabel = action[`label_${currentLang}`];
+    option.value = translatedLabel;
+    option.textContent = translatedLabel;
+    actionSelect.appendChild(option);
+    if (currentSelectedActionValue === translatedLabel) {
+        foundMatchForCurrentAction = true;
+    }
+  });
+
+  if (foundMatchForCurrentAction) {
+      actionSelect.value = currentSelectedActionValue;
+  } else {
+      actionSelect.value = translations[lang].all_actions;
+  }
+
+  const periodOptions = timeSelect.querySelectorAll('option');
+  periodOptions.forEach(option => {
+      const key = option.getAttribute('value');
+      if (translations[currentLang][`period_${key}`]) {
+          option.textContent = translations[currentLang][`period_${key}`];
+      }
+  });
+}
+
+function updateActiveLangIcon(activeLang) {
+  document.querySelectorAll('.lang-icon-btn').forEach(button => {
+    if (button.getAttribute('data-lang') === activeLang) {
+      button.classList.add('active');
+    } else {
+      button.classList.remove('active');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(currentLang);
+});
 
 
 toggleThemeBtn.addEventListener('click', () => {
@@ -57,10 +103,23 @@ toggleThemeBtn.addEventListener('click', () => {
   icon.style.opacity = label.style.opacity = '0';
   setTimeout(() => {
     icon.textContent = isDarkTheme ? 'brightness_6' : 'brightness_4';
-    label.textContent = isDarkTheme ? 'Сменить тему' : 'Вернуть тёмную тему';
+    label.textContent = isDarkTheme ? translations[currentLang].toggle_theme : translations[currentLang].toggle_theme_light;
     icon.style.opacity = label.style.opacity = '1';
   }, 200);
 });
+
+languageIconsContainer.addEventListener('click', (event) => {
+  const targetButton = event.target.closest('.lang-icon-btn');
+  if (targetButton) {
+    const newLang = targetButton.getAttribute('data-lang');
+    if (newLang && newLang !== currentLang) {
+      currentLang = newLang;
+      setLanguage(currentLang);
+      applyFilters(); // Повторно застосовуємо фільтри, щоб оновити вивід з новим перекладом
+    }
+  }
+});
+
 
 fileInput.addEventListener('change', e => {
   const file = e.target.files?.[0];
@@ -76,58 +135,97 @@ fileInput.addEventListener('change', e => {
       })
       .filter(Boolean);
 
-    alert("Файл успешно загружен");
+    alert(translations[currentLang].file_uploaded_success);
     applyFilters();
   };
-  reader.onerror = () => alert("Ошибка при загрузке файла");
+  reader.onerror = () => alert(translations[currentLang].file_upload_error);
   reader.readAsText(file, 'utf-8');
 });
 
 [actionSelect, timeSelect].forEach(el => el.addEventListener('change', applyFilters));
 
-const extractActionDetails = text => 
-  (actionMap.find(({ keyword }) => text.includes(keyword)) || {}).label || "Все действия";
+
+// Функція для визначення оригінальної дії та її перекладу
+const getTranslatedActionAndOriginalLabel = (actionText, targetLang) => {
+    let translatedActionText = actionText;
+    let originalLabelForColor = "Все действия"; // Дефолтне значення для кольору
+
+    // Ітеруємося по actionMap для пошуку ключових слів
+    // Починаємо з найдовших ключових слів, щоб уникнути часткових збігів
+    const sortedActionMap = [...actionMap].sort((a, b) => b.keyword.length - a.keyword.length);
+
+    for (const action of sortedActionMap) {
+        if (actionText.includes(action.keyword)) {
+            const originalRuLabel = action.label_ru;
+            const translatedLabel = action[`label_${targetLang}`];
+            
+            // Замінюємо лише перше входження, щоб уникнути проблем, якщо ключове слово зустрічається кілька разів
+            translatedActionText = translatedActionText.replace(originalRuLabel, translatedLabel);
+            originalLabelForColor = originalRuLabel; // Зберігаємо оригінальний ру-лейбл для кольору
+            break; // Знайшли відповідність, виходимо
+        }
+    }
+    
+    return {
+        translatedText: translatedActionText,
+        originalLabelForColor: originalLabelForColor
+    };
+};
+
 
 function applyFilters() {
   if (!logData.length) {
-    outputText.textContent = 'Пожалуйста, загрузите лог-файл.';
+    outputText.textContent = translations[currentLang].upload_log_prompt;
     return;
   }
 
   const selectedAction = actionSelect.value;
   const selectedTime = timeSelect.value;
   const timeMap = {
-  week: 7,
-  '2weeks': 14,
-  '3weeks': 21,
-  month: 30,
-  '2months': 60,
-  '3months': 90,
-  year: 365
-};
+    week: 7,
+    '2weeks': 14,
+    '3weeks': 21,
+    month: 30,
+    '2months': 60,
+    '3months': 90,
+    year: 365
+  };
 
   const cutoff = Date.now() - (timeMap[selectedTime] || 0) * 86400000;
 
   const filtered = logData.filter(entry => {
     const entryTime = new Date(entry.timestamp).getTime();
-    const type = extractActionDetails(entry.action);
-    entry.type = type;
-    return (selectedAction === "Все действия" || type === selectedAction) && entryTime >= cutoff;
+    
+    // Для фільтрації ми шукаємо відповідність за оригінальним російським ключовим словом
+    const originalActionForFiltering = actionMap.find(({ keyword }) => entry.action.includes(keyword)) || {};
+    const originalActionLabelForFiltering = originalActionForFiltering.label_ru || translations['ru'].all_actions;
+    
+    // Знаходимо оригінальну російську мітку для поточно вибраної дії у actionSelect
+    const currentSelectedActionOriginalLabel = actionMap.find(action => action[`label_${currentLang}`] === selectedAction) || {};
+    const filterByOriginalLabel = currentSelectedActionOriginalLabel.label_ru || translations['ru'].all_actions;
+
+
+    return (selectedAction === translations[currentLang].all_actions || originalActionLabelForFiltering === filterByOriginalLabel) && entryTime >= cutoff;
   });
 
   outputText.textContent = filtered.length
     ? ""
-    : 'Нет записей, соответствующих выбранным фильтрам.';
+    : translations[currentLang].no_records_found;
 
   if (filtered.length) displayResults(filtered);
 }
+
 
 function displayResults(results) {
   outputText.innerHTML = '';
   results.forEach((entry, i) => {
     const span = document.createElement('span');
-    span.textContent = `[${entry.timestamp}] - ${entry.action}\n`;
-    span.style.color = colors[entry.type] || colors["Все действия"];
+    
+    // Отримуємо перекладений текст дії та оригінальну мітку для визначення кольору
+    const { translatedText, originalLabelForColor } = getTranslatedActionAndOriginalLabel(entry.action, currentLang);
+
+    span.textContent = `[${entry.timestamp}] - ${translatedText}\n`;
+    span.style.color = colors[originalLabelForColor]; // Використовуємо оригінальний ключ для кольору
     span.style.animationDelay = `${i * 50}ms`;
 
     span.addEventListener('click', () => {
