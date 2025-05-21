@@ -1,7 +1,9 @@
 ![image](https://github.com/user-attachments/assets/3e3c3ea1-d718-4bdb-b8e0-6a2550455425)
 # 🚨 Проверка Антиблата для Arizona RP 🚨
 
-![Arizona RP Logo](./image.jpg)
+<p align="center">
+  <img src="logo_test_az3d.png" alt="Arizona RP Logo" width="300" />
+  </p>
 
 ## 📋 О проекте
 
