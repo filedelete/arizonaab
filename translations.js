@@ -2,6 +2,7 @@
 const translations = {
   'ru': {
     title: 'Проверка Антиблата',
+	enter_nickname: "Введите никнейм",
     controls_heading: 'Управление',
     select_file: 'Выбрать файл',
     select_action: 'Выберите действие:',
@@ -24,6 +25,8 @@ const translations = {
     select_period: 'Выберите период:',
     period_week: 'Неделя',
     period_2weeks: '2 Недели',
+	show_stats: 'Показать статистику',
+    hide_stats: 'Скрыть статистику',
     period_3weeks: '3 Недели',
     period_month: 'Месяц',
     period_2months: '2 месяца',
@@ -36,10 +39,15 @@ const translations = {
     copied_toast: 'Скопировано!',
     file_uploaded_success: 'Файл успешно загружен',
     file_upload_error: 'Ошибка при загрузке файла',
-    no_records_found: 'Нет записей, соответствующих выбранным фильтрам.'
+	history_heading: 'История загрузок',
+    no_records_found_history: 'История загрузок пуста.',
+	history_heading: 'Історія завантажень',
+   history_heading: 'История загрузок',
+   no_records_found_history: 'История загрузок пуста.'
   },
   'uk': {
     title: 'Перевірка Антиблату',
+	enter_nickname: "Введіть нікнейм",
     controls_heading: 'Керування',
     select_file: 'Вибрати файл',
     select_action: 'Виберіть дію:',
@@ -60,6 +68,8 @@ const translations = {
     action_prisoner_released: 'Випустив ув\'язненого',
     action_prisoner_term_increased: 'Збільшив термін ув\'язненому',
     select_period: 'Виберіть період:',
+	show_stats: 'Показати статистику',
+    hide_stats: 'Приховати статистику',
     period_week: 'Тиждень',
     period_2weeks: '2 Тижні',
     period_3weeks: '3 Тижні',
@@ -74,10 +84,13 @@ const translations = {
     copied_toast: 'Скопійовано!',
     file_uploaded_success: 'Файл успішно завантажено',
     file_upload_error: 'Помилка під час завантаження файлу',
-    no_records_found: 'Немає записів, що відповідають вибраним фільтрам.'
+    no_records_found: 'Немає записів, що відповідають вибраним фільтрам.',
+	history_heading: 'Історія завантажень',
+    no_records_found_history: 'Історія завантажень порожня.'
   },
   'en': {
     title: 'Anti-Blat Check',
+	enter_nickname: "Enter nickname",
     controls_heading: 'Controls',
     select_file: 'Select File',
     select_action: 'Select Action:',
@@ -98,6 +111,8 @@ const translations = {
     action_prisoner_released: 'Released prisoner',
     action_prisoner_term_increased: 'Increased prisoner\'s term',
     select_period: 'Select Period:',
+	show_stats: 'Show Statistics',
+    hide_stats: 'Hide Statistics',
     period_week: 'Week',
     period_2weeks: '2 Weeks',
     period_3weeks: '3 Weeks',
@@ -111,8 +126,8 @@ const translations = {
     upload_log_prompt: 'Please upload a log file.',
     copied_toast: 'Copied!',
     file_uploaded_success: 'File uploaded successfully',
-    file_upload_error: 'Error uploading file',
-    no_records_found: 'No records found matching the selected filters.'
+    history_heading: 'Upload History',
+    no_records_found_history: 'Upload history is empty.'
   }
 };
 
