@@ -14,7 +14,7 @@ const chartWrapper = $('chart-wrapper'); // Обертка для графика
 const historyList = $('history-list'); // Список для истории загрузок
 const historyHeading = $('history-heading'); // Заголовок истории
 
-// Изменено: logData теперь будет содержать ОБЪЕДИНЕННЫЕ данные из всех загруженных файлов.
+// Изменено: logData теперь будет содержать ОБЪЕДИНЕННЫЕ данные из всех загруженных файлов
 let logData = [];
 let isDarkTheme = true;
 let currentLang = 'ru';
