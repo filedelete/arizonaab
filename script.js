@@ -147,6 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initLegendObserver(); // Инициализируем наблюдатель при загрузке DOM
     renderHistory(); // Initial render of history on page load
 });
+const radioContainer = document.createElement('div');
+radioContainer.id = 'radio-container';
+radioContainer.innerHTML = `
+  <label>🎧 Онлайн Радио</label>
+  <audio id="radio-player" controls preload="none">
+    <source src="https://stream.dancewave.online/dance.mp3" type="audio/mpeg" />
+    Ваш браузер не поддерживает аудио.
+  </audio>
+`;
+document.getElementById('left-panel').appendChild(radioContainer);
+
 
 toggleThemeBtn.addEventListener('click', () => {
   isDarkTheme = !isDarkTheme;
