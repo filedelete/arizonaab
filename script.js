@@ -14,7 +14,7 @@ const chartWrapper = $('chart-wrapper'); // Обертка для графика
 const historyList = $('history-list'); // Список для истории загрузок
 const historyHeading = $('history-heading'); // Заголовок истории
 
-// Изменено: logData теперь будет содержать ОБЪЕДИНЕННЫЕ данные из всех загруженных файлов
+// Изменено: logData теперь будет содержать ОБЪЕДИНЕННЫЕ данные из всех загруженных файлов.
 let logData = [];
 let isDarkTheme = true;
 let currentLang = 'ru';
@@ -147,6 +147,33 @@ document.addEventListener('DOMContentLoaded', () => {
     initLegendObserver(); // Инициализируем наблюдатель при загрузке DOM
     renderHistory(); // Initial render of history on page load
 });
+const radioContainer = document.createElement('div');
+radioContainer.id = 'radio-container';
+radioContainer.innerHTML = `
+  <label>🎧 Онлайн Радио</label>
+  <select id="radio-select">
+    <option value="https://stream.laut.fm/uplifting-trance-radio">Uplifting Trance</option>
+    <option value="https://dancewave.online/dance.mp3">Dancewave</option>
+    <option value="https://stream.radioparadise.com/aac-320">Radio Paradise</option>
+    <option value="https://icecast.omroep.nl/radio2-bb-mp3">NPO Radio 2</option>
+    <option value="https://streams.ilovemusic.de/iloveradio1.mp3">I Love Radio</option>
+    <option value="https://stream.laut.fm/chillout">Chillout Zone</option>
+  </select>
+  <audio id="radio-player" controls preload="none" src="https://stream.laut.fm/uplifting-trance-radio">
+    Ваш браузер не поддерживает аудио.
+  </audio>
+`;
+
+document.getElementById('left-panel').appendChild(radioContainer);
+
+document.getElementById('radio-select').addEventListener('change', (e) => {
+  const player = document.getElementById('radio-player');
+  player.src = e.target.value;
+  player.load();
+  player.play().catch(() => {});
+});
+
+
 
 toggleThemeBtn.addEventListener('click', () => {
   isDarkTheme = !isDarkTheme;
@@ -585,13 +612,6 @@ function renderHistory() {
             // Если вы хотите, чтобы клик на элемент истории "множественной загрузки"
             // снова загружал все эти файлы, то uploadedFilesHistory должен хранить
             // массив `parsedLogData` для каждого файла.
-
-            // Я исправил логику так, чтобы при клике на элемент истории,
-            // загружался именно тот файл, который был выбран из истории.
-            // Т.е., logData будет перезаписываться данными ТОЛЬКО ЭТОГО файла.
-            // Если вы хотите, чтобы при клике на элемент истории, все загруженные
-            // файлы, которые были объединены, снова отображались, то логика будет другой.
-            // Я предполагаю, что вы хотите просматривать каждый лог отдельно.
             logData = fileEntry.parsedLogData; // Загружаем данные только этого файла из истории
             applyFilters(); // Применяем фильтры к загруженным данным
         });
