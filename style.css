@@ -4,8 +4,8 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #121212; /* Dark charcoal */
-  color: #f0f0f0; /* Off-white for primary text */
+  background-color: #121212;
+  color: #f0f0f0;
   margin: 0;
   display: flex;
   min-height: 100vh;
@@ -14,14 +14,12 @@ body {
 }
 
 body.light-theme {
-  background-color: #f4f4f4; /* Very light gray */
-  color: #1e1e1e; /* Dark charcoal for primary text in light theme */
+  background-color: #f0f0f0;
+  color: #121212;
 }
 
-/* Smooth transitions for elements that change with theme */
-#left-panel, #right-panel, select, #output-text, .file-label, .btn,
-#nickname-input, .history-item {
-  transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+#left-panel, #right-panel, select, #output-text, .file-label, .btn {
+  transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
 }
 
 #toggle-theme .material-icons,
@@ -46,16 +44,16 @@ body.light-theme {
 }
 
 #left-panel {
-  background-color: #1e1e1e; /* Slightly lighter charcoal for panels */
+  background-color: #1e1e1e;
   width: 320px;
   box-shadow: 2px 0 8px rgba(0,0,0,0.3);
   animation-name: slideInLeft;
-  overflow-y: auto; /* Allows scrolling if content exceeds height */
+  overflow-y: auto; /* Позволяет прокрутку, если содержимое превышает высоту */
 }
 
 #right-panel {
   flex: 1;
-  background-color: #121212; /* Main background color */
+  background-color: #121212;
   animation-name: slideInRight;
 }
 
@@ -63,20 +61,20 @@ h2 {
   font-size: 1.6rem;
   text-align: center;
   margin-bottom: 24px;
-  color: #90caf9; /* Light blue accent for headings */
+  color: #90caf9;
 }
 
 label {
   display: block;
   margin-bottom: 8px;
-  color: #b0bec5; /* Muted blue-gray for labels */
+  color: #b0bec5;
 }
 
 input[type="file"] {
   display: none;
 }
 
-/* Buttons and file labels */
+/* Кнопки и ярлыки файлов */
 .file-label, .btn {
   display: inline-flex;
   align-items: center;
@@ -84,32 +82,32 @@ input[type="file"] {
   gap: 10px;
   padding: 12px 20px;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #28a745, #218838); /* Green gradient */
+  background: linear-gradient(135deg, #1976d2, #42a5f5);
   color: white;
-  border-radius: 8px; /* Softer rounded corners */
+  border-radius: 8px;
   cursor: pointer;
   font-size: 1.05rem;
   font-weight: 600;
   border: none;
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.6); /* Soft shadow for depth */
+  box-shadow: 0 4px 12px rgba(66, 165, 245, 0.6);
   user-select: none;
   text-align: center;
   transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
 }
 
 .file-label:hover, .btn:hover {
-  background: linear-gradient(135deg, #218838, #1e7e34); /* Slightly darker green on hover */
-  box-shadow: 0 6px 18px rgba(33, 136, 56, 0.7); /* More pronounced shadow on hover */
-  transform: translateY(-2px); /* Subtle lift effect */
+  background: linear-gradient(135deg, #1565c0, #64b5f6);
+  box-shadow: 0 6px 18px rgba(100, 181, 246, 0.7);
+  transform: translateY(-2px);
 }
 
 .file-label:active, .btn:active {
-  transform: translateY(0); /* Revert lift on click */
-  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.5); /* Smaller shadow on active */
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(66, 165, 245, 0.5);
 }
 
 .file-label:focus-visible, .btn:focus-visible {
-  outline: 2px solid #28a745; /* Focus indicator for accessibility */
+  outline: 2px solid #90caf9;
   outline-offset: 3px;
 }
 
@@ -119,7 +117,7 @@ select {
   margin-bottom: 16px;
   border: none;
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker background for select */
+  background-color: #2c2c2c;
   color: #f0f0f0;
   font-size: 1rem;
 }
@@ -127,15 +125,15 @@ select {
 #output-text, #history-list {
   flex: 1; /* Allow these to take available space */
   padding: 20px;
-  background-color: #1e1e1e; /* Consistent panel background */
+  background-color: #1e1e1e;
   border-radius: 8px;
   overflow-y: auto;
   white-space: pre-wrap;
   font-size: 14px;
   line-height: 1.6;
   word-break: break-word;
-  font-family: 'Roboto Mono', monospace; /* Monospaced font for code/output */
-  /* Custom scrollbar for Webkit */
+  font-family: 'Roboto Mono', monospace;
+  /* Кастомный скроллбар для Webkit */
   scrollbar-width: thin;
   scrollbar-color: #424242 #2c2c2c;
 }
@@ -162,29 +160,29 @@ select {
   border-radius: 6px;
   opacity: 0;
   cursor: pointer;
-  animation: fadeInText 0.5s forwards; /* Animation for individual text lines */
+  animation: fadeInText 0.5s forwards;
   transition: color 0.3s ease, transform 0.2s ease, background-color 0.3s ease;
   font-weight: 400;
 }
 
 #output-text span:hover {
-  color: #90caf9 !important; /* Light blue on hover */
-  background-color: rgba(144, 202, 249, 0.15); /* Subtle background on hover */
-  transform: translateX(5px); /* Slide effect on hover */
+  color: #90caf9 !important;
+  background-color: rgba(144, 202, 249, 0.15);
+  transform: translateX(5px);
 }
 
 #output-text span.active {
-  color: #42a5f5 !important; /* Vibrant blue when active */
-  background-color: rgba(66, 165, 245, 0.25); /* More pronounced background when active */
-  transform: scale(0.99); /* Slight scale down on active */
-  box-shadow: 0 0 5px rgba(66, 165, 245, 0.5); /* Glow effect when active */
+  color: #42a5f5 !important;
+  background-color: rgba(66, 165, 245, 0.25);
+  transform: scale(0.99);
+  box-shadow: 0 0 5px rgba(66, 165, 245, 0.5);
 }
 
 #copy-toast {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background-color: #4caf50; /* Green for success */
+  background-color: #4caf50;
   color: white;
   padding: 12px 20px;
   border-radius: 12px;
@@ -210,7 +208,7 @@ select {
   border-radius: 12px;
   background: linear-gradient(270deg, #42a5f5, #ab47bc, #66bb6a, #ffee58, #42a5f5);
   background-size: 600% 600%;
-  animation: gradientFlow 30s linear infinite; /* Animated gradient */
+  animation: gradientFlow 30s linear infinite;
   font-size: 14px;
   font-weight: 500;
   color: #fff;
@@ -218,7 +216,7 @@ select {
   z-index: 9999;
 }
 
-/* Light Theme Overrides */
+/* Темы */
 body.light-theme {
   background-color: #f4f4f4;
   color: #1e1e1e;
@@ -226,11 +224,11 @@ body.light-theme {
 
 body.light-theme #left-panel,
 body.light-theme #right-panel {
-  background-color: #fff; /* White panels in light theme */
+  background-color: #fff;
 }
 
 body.light-theme h2 {
-  color: #1976d2; /* Stronger blue for headings in light theme */
+  color: #1976d2;
 }
 
 body.light-theme label {
@@ -238,12 +236,12 @@ body.light-theme label {
 }
 
 body.light-theme select {
-  background-color: #eee; /* Lighter background for select */
+  background-color: #eee;
   color: #1e1e1e;
 }
 
 body.light-theme #output-text, body.light-theme #history-list {
-  background-color: #f9f9f9; /* Off-white for output/history */
+  background-color: #f9f9f9;
   color: #1e1e1e;
   scrollbar-color: #bdbdbd #e0e0e0;
 }
@@ -270,8 +268,8 @@ body.light-theme #output-text span.active {
 
 body.light-theme .file-label,
 body.light-theme .btn {
-  background: linear-gradient(135deg, #28a745, #218838); /* Green gradient for light theme buttons */
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.6);
+  background: linear-gradient(135deg, #42a5f5, #1976d2);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.6);
   color: white;
   font-weight: 600;
   transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
@@ -279,24 +277,24 @@ body.light-theme .btn {
 
 body.light-theme .file-label:hover,
 body.light-theme .btn:hover {
-  background: linear-gradient(135deg, #218838, #1e7e34);
-  box-shadow: 0 6px 18px rgba(33, 136, 56, 0.7);
+  background: linear-gradient(135deg, #64b5f6, #1565c0);
+  box-shadow: 0 6px 18px rgba(21, 101, 192, 0.7);
   transform: translateY(-2px);
 }
 
 body.light-theme .file-label:active,
 body.light-theme .btn:active {
   transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.5);
+  box-shadow: 0 3px 10px rgba(25, 118, 210, 0.5);
 }
 
 body.light-theme .file-label:focus-visible,
 body.light-theme .btn:focus-visible {
-  outline: 2px solid #28a745;
+  outline: 2px solid #1976d2;
   outline-offset: 3px;
 }
 
-/* Styles for language icon buttons */
+/* Стилі для кнопок-іконок мов */
 #language-icons {
   display: flex;
   justify-content: center;
@@ -306,7 +304,7 @@ body.light-theme .btn:focus-visible {
 }
 
 .lang-icon-btn {
-  background-color: #424242; /* Dark gray for inactive buttons */
+  background-color: #424242;
   color: #e0e0e0;
   border: 2px solid transparent;
   padding: 8px 12px;
@@ -326,10 +324,10 @@ body.light-theme .btn:focus-visible {
 }
 
 .lang-icon-btn.active {
-  background-color: #1976d2; /* Vibrant blue for active button */
+  background-color: #1976d2;
   border-color: #42a5f5;
-  transform: scale(1.05); /* Slight enlargement when active */
-  box-shadow: 0 0 15px rgba(66, 165, 245, 0.7); /* Glow effect when active */
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(66, 165, 245, 0.7);
 }
 
 body.light-theme .lang-icon-btn {
@@ -348,7 +346,7 @@ body.light-theme .lang-icon-btn.active {
   box-shadow: 0 0 15px rgba(25, 118, 210, 0.7);
 }
 
-/* Animations */
+/* Анимации */
 @keyframes fadeInText {
   from {
     opacity: 0;
@@ -405,21 +403,21 @@ body.light-theme .lang-icon-btn.active {
   }
 }
 
-/* Responsiveness */
+/* Адаптивность */
 @media (max-width: 768px) {
   .app-container {
-    flex-direction: column; /* Stack panels vertically on small screens */
+    flex-direction: column;
   }
   #left-panel, #right-panel {
     width: 100%;
     padding: 16px 12px;
-    box-shadow: none; /* Remove shadows for cleaner mobile look */
+    box-shadow: none;
   }
   #output-text, #history-list {
     font-size: 14px;
   }
   .chart-container {
-      max-width: 250px; /* Adjust chart size for mobile */
+      max-width: 250px;
       height: 250px;
       margin-left: auto;
       margin-right: auto;
@@ -442,13 +440,13 @@ body.light-theme .lang-icon-btn.active {
   margin-bottom: 16px;
   border: none;
   border-radius: 4px;
-  background-color: #2c2c2c; /* Darker background for input */
+  background-color: #2c2c2c;
   color: #f0f0f0;
   font-size: 1rem;
 }
 
 body.light-theme #nickname-input {
-  background-color: #eee; /* Lighter background for input in light theme */
+  background-color: #eee;
   color: #1e1e1e;
 }
 
@@ -480,16 +478,16 @@ body.light-theme #nickname-input {
   pointer-events: none; /* Disable interaction when hidden */
 }
 
-/* Style for the chart container in the left panel */
+/* Стиль для контейнера графика в левой панели */
 .chart-container {
   width: 100%;
-  max-width: 280px;
-  height: 280px;
+  max-width: 280px; /* Можете изменить по необходимости */
+  height: 280px; /* Можете изменить по необходимости */
   margin: 10px auto;
-  background-color: transparent; /* No background */
-  border-radius: 0; /* No rounded corners */
-  padding: 0; /* No padding */
-  box-shadow: none; /* No shadow */
+  background-color: transparent; /* Убран фон */
+  border-radius: 0; /* Убрано скругление, чтобы график был в квадратном контейнере */
+  padding: 0; /* Убраны отступы */
+  box-shadow: none; /* Убрана тень */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -498,25 +496,25 @@ body.light-theme #nickname-input {
 }
 
 body.light-theme .chart-container {
-  background-color: transparent; /* No background in light theme */
-  box-shadow: none; /* No shadow in light theme */
+  background-color: transparent; /* Убран фон в светлой теме */
+  box-shadow: none; /* Убрана тень в светлой теме */
 }
 
-/* Important: Style for Canvas inside the container */
-/* Ensure canvas always has 100% width and height of its parent */
+/* Важно: Стиль для Canvas внутри контейнера */
+/* Убедитесь, что canvas всегда имеет 100% ширины и высоты своего родителя */
 .chart-container canvas {
   width: 100% !important;
   height: 100% !important;
-  display: block; /* Ensure canvas is not inline */
+  display: block; /* Убеждаемся, что canvas не инлайн-элемент */
 }
 
-/* Adaptation for stats heading if it's too large */
+/* Адаптация для заголовка статистики, если он слишком большой */
 #left-panel h2[data-key="chart_heading"] {
     font-size: 1.4rem;
     margin-top: 24px;
 }
 
-/* Style for custom legend below the chart */
+/* Стиль для кастомной легенды под графиком */
 .chart-legend {
   margin-top: 20px;
   padding: 10px 0;
@@ -545,7 +543,7 @@ body.light-theme .chart-container {
   word-break: break-word;
 }
 
-/* Light theme styles for legend */
+/* Стили для светлой темы для легенды */
 body.light-theme .chart-legend {
   color: #333;
 }
@@ -565,7 +563,7 @@ body.light-theme .chart-legend-color-box {
 }
 
 .history-item {
-    background-color: #2c2c2c; /* Dark background for history items */
+    background-color: #2c2c2c;
     padding: 10px 15px;
     border-radius: 6px;
     cursor: pointer;
@@ -578,7 +576,7 @@ body.light-theme .chart-legend-color-box {
 }
 
 .history-item:hover {
-    background-color: #3a3a3a; /* Slightly lighter on hover */
+    background-color: #3a3a3a;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
@@ -591,7 +589,7 @@ body.light-theme .chart-legend-color-box {
 }
 
 body.light-theme .history-item {
-    background-color: #eee; /* Lighter background in light theme */
+    background-color: #eee;
     color: #1e1e1e;
 }
 
@@ -605,27 +603,104 @@ body.light-theme .history-item .timestamp {
 
 /* Styles for active history item */
 .history-item.active {
-    background-color: #007bff; /* Bright blue for active item */
-    color: white; /* White text for contrast */
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.7); /* More pronounced shadow */
-    border: 1px solid #0056b3; /* Small border */
-    transform: scale(1.02); /* Slightly enlarge active item */
+    background-color: #007bff; /* Яркий синий цвет для активного элемента */
+    color: white; /* Белый текст для контраста */
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.7); /* Более выраженная тень */
+    border: 1px solid #0056b3; /* Небольшая граница */
+    transform: scale(1.02); /* Немного увеличиваем активный элемент */
 }
 
-/* For light theme active item */
+/* Для светлой темы */
 body.light-theme .history-item.active {
-    background-color: #0056b3; /* Darker blue for light theme */
+    background-color: #0056b3; /* Темнее синий для светлой темы */
     color: white;
     box-shadow: 0 0 15px rgba(0, 86, 179, 0.7);
     border: 1px solid #003f7f;
 }
 
-/* Adjust hover effect for active item to avoid overriding active color */
+/* Также можно немного изменить hover эффект для активного элемента, чтобы он не перебивал active цвет */
 .history-item.active:hover {
-    background-color: #0069d9; /* Slightly darker blue on hover for active item */
-    transform: scale(1.02); /* Maintain size */
+    background-color: #0069d9; /* Чуть темнее синий при наведении на активный */
+    transform: scale(1.02); /* Сохраняем размер, чтобы не дергался */
 }
 
 body.light-theme .history-item.active:hover {
     background-color: #004d9a;
 }
+#radio-container {
+  margin-top: 20px;
+  /* Используем цвета из основных панелей для темного режима */
+  background: linear-gradient(145deg, #1e1e1e, #121212); /* Оттенки из #left-panel и body */
+  padding: 28px 24px;
+  border-radius: 16px;
+  /* Тень от кнопок, но менее выраженная */
+  box-shadow: 0 8px 20px rgba(66, 165, 245, 0.2); /* Адаптировано под синие оттенки сайта */
+  text-align: center;
+  user-select: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#radio-container label {
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: #90caf9; /* Цвет заголовков h2 */
+  margin-bottom: 18px;
+  display: block;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(144, 202, 249, 0.5); /* Тень от цвета заголовков */
+  cursor: default;
+  font-family: 'Roboto', sans-serif; /* Использование основного шрифта */
+}
+
+#radio-player {
+  width: 100%;
+  border-radius: 14px;
+  outline: none;
+  /* Тень от кнопок, но менее выраженная */
+  box-shadow: 0 6px 15px rgba(66, 165, 245, 0.4); /* Адаптировано под синие оттенки сайта */
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  background-color: #2c2c2c; /* Цвет select и скроллбаров */
+  color: #f0f0f0; /* Основной цвет текста */
+  border: none;
+  height: 42px;
+  cursor: pointer;
+}
+
+#radio-player:hover {
+  box-shadow: 0 8px 25px rgba(66, 165, 245, 0.7); /* Более выраженная тень при наведении */
+}
+
+#radio-player:focus {
+  box-shadow: 0 0 20px #90caf9; /* Цвет focus-visible */
+}
+
+/* --- СВЕТЛАЯ ТЕМА --- */
+body.light-theme #radio-container {
+  background: linear-gradient(145deg, #f9f9f9, #fff); /* Цвета из output-text и панелей */
+  box-shadow: 0 8px 20px rgba(25, 118, 210, 0.15); /* Адаптировано под синие оттенки светлой темы */
+}
+
+body.light-theme #radio-container label {
+  color: #1976d2; /* Цвет h2 в светлой теме */
+  text-shadow: 0 0 6px rgba(25, 118, 210, 0.5);
+}
+
+body.light-theme #radio-player {
+  background-color: #eee; /* Цвет select в светлой теме */
+  color: #1e1e1e; /* Цвет текста в светлой теме */
+  box-shadow: 0 6px 15px rgba(25, 118, 210, 0.4); /* Тень от кнопок в светлой теме */
+}
+
+body.light-theme #radio-player:hover {
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.7);
+}
+
+body.light-theme #radio-player:focus {
+  box-shadow: 0 0 20px #1976d2;
+}
+
+
+
