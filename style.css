@@ -177,6 +177,45 @@ select {
   transform: scale(0.99);
   box-shadow: 0 0 5px rgba(66, 165, 245, 0.5);
 }
+/* Базовые стили для всех тостов (скрытое состояние) */
+.toast {
+    visibility: hidden; /* Важно: скрывает элемент, но сохраняет его место */
+    opacity: 0;        /* Важно: делает элемент полностью прозрачным */
+
+    /* Позиционирование: */
+    position: fixed;   /* Важно: чтобы тост оставался на одном месте при прокрутке */
+    left: 50%;         /* Центрируем по горизонтали */
+    transform: translateX(-50%); /* Точная центровка */
+    bottom: 30px;      /* Отступ от нижнего края */
+    z-index: 1000;     /* Важно: чтобы тост был поверх других элементов */
+
+    /* Внешний вид: */
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    font-size: 17px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    /* Анимация перехода: */
+    transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Стили для показанного тоста */
+.toast.show {
+    visibility: visible; /* Делает элемент видимым */
+    opacity: 1;        /* Делает элемент полностью непрозрачным */
+    /* transform: translateX(-50%) translateY(-10px); /* Можно добавить легкую анимацию вверх */
+}
+
+/* Стили для светлой темы (если есть) */
+body.light-theme .toast {
+    background-color: #f0f0f0;
+    color: #1e1e1e;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
 #copy-toast {
   position: fixed;
