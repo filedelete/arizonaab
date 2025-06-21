@@ -45,20 +45,41 @@ const colors = {
   "Повысил срок заключенному": "#C62828", // Dark Red
   // Добавьте другие действия и цвета по мере необходимости
 };
-// Функция для получения цвета по действию, адаптированная под translations.js
-function getActionColor(actionKeyword) {
-    // Находим ключевое слово действия в translations.actionLabels и соответствующий цвет
-    const actionTranslation = actionLabels.find(item => item.keyword === actionKeyword);
-    if (actionTranslation && colors[actionTranslation.label_ru]) { // Используем label_ru для поиска цвета
-        return colors[actionTranslation.label_ru];
-    }
-    // Если точное совпадение не найдено, ищем по подстроке для более общих случаев
-    for (const key in colors) {
-        if (actionKeyword.includes(key) && key !== "Все действия") { // Избегаем "Все действия" как общего совпадения
-             return colors[key];
+function getActionColor(actionText) {
+    // Находим цвет по полному тексту действия
+    for (const [action, color] of Object.entries(colors)) {
+        if (actionText.includes(action)) {
+            return color;
         }
     }
-    return "#d0d0d0"; // Default color if no specific action color is found
+    
+    // Если точного совпадения нет, ищем по ключевым словам
+    const actionKeywords = [
+        { keyword: "принял игрока", color: "#4CAF50" },
+        { keyword: "уволил игрока", color: "#F44336" },
+        { keyword: "подтверждает участие", color: "#2196F3" },
+        { keyword: "изменил ранг", color: "#FFEB3B" },
+        { keyword: "установил игроку тег", color: "#9C27B0" }, // Добавлено полное совпадение
+        { keyword: "установил игроку", color: "#9C27B0" }, // Добавлено частичное совпадение
+        { keyword: "открыл склад", color: "#FF9800" },
+        { keyword: "закрыл склад", color: "#795548" },
+        { keyword: "дал выговор", color: "#E91E63" },
+        { keyword: "снял выговор", color: "#00BCD4" },
+        { keyword: "пополнил счет", color: "#8BC34A" },
+        { keyword: "выдал премию", color: "#FFC107" },
+        { keyword: "назначил собеседование", color: "#673AB7" },
+        { keyword: "отменил собеседование", color: "#B0BEC5" },
+        { keyword: "выпустил заключенного", color: "#607D8B" },
+        { keyword: "повысил срок", color: "#C62828" }
+    ];
+    
+    for (const { keyword, color } of actionKeywords) {
+        if (actionText.toLowerCase().includes(keyword)) {
+            return color;
+        }
+    }
+    
+    return "#d0d0d0"; // Цвет по умолчанию
 }
 
 
@@ -208,7 +229,9 @@ function extractActionDetails(actionString) {
         { keyword: "уволил игрока", label_key: "action_fired" },
         { keyword: "подтверждает участие на мероприятие фракции", label_key: "action_event_confirmed" },
         { keyword: "изменил ранг игрока", label_key: "action_rank_changed" },
-        { keyword: "установил игроку тег", label_key: "action_tag_set" },
+         { keyword: "установил игроку тег", label_key: "action_tag_set" },
+        { keyword: "установил игроку", label_key: "action_tag_set" }, // Более общее совпадение
+        { keyword: "установил тег", label_key: "action_tag_set" },    // Альтернативная формулировка
         { keyword: "открыл общак", label_key: "action_warehouse_opened" },
         { keyword: "закрыл общак", label_key: "action_warehouse_closed" },
         { keyword: "дал выговор", label_key: "action_warning_given" },
@@ -407,18 +430,59 @@ function applyFilters() {
     console.log("Filters applied. Filtered entries:", filteredData.length);
 }
 
-// Отображение результатов
+// Заменяем существующую функцию displayResults
 function displayResults(data) {
+    outputText.innerHTML = ''; // Очищаем контейнер
+    
     if (data.length === 0) {
-        outputText.textContent = translations[currentLang].no_results; // No results found after filters
-        console.log("No results to display.");
+        const noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.textContent = translations[currentLang].no_results;
+        outputText.appendChild(noResults);
         return;
     }
-    // Сортировка данных от новых к старым (по убыванию timestamp)
+
+    // Сортировка от новых к старым
     const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    const lines = sortedData.map(entry => `▶️ ${entry.timestamp} ${entry.action}`);
-    outputText.textContent = lines.join('\n');
-    console.log(`Displaying ${lines.length} lines.`);
+
+    sortedData.forEach(entry => {
+        const entryEl = document.createElement('div');
+        entryEl.className = 'log-entry';
+        entryEl.style.color = getActionColor(entry.type);
+        
+        // Форматируем текст для отображения
+        const textContent = `${entry.timestamp} ${entry.action}`;
+        entryEl.textContent = textContent;
+        
+        // Сохраняем полный текст строки в dataset
+        entryEl.dataset.fullText = textContent;
+
+        // Обработчик клика для выделения
+        entryEl.addEventListener('click', function(e) {
+            // Снимаем выделение со всех элементов
+            document.querySelectorAll('.log-entry').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Выделяем текущий элемент
+            this.classList.add('active');
+            e.stopPropagation(); // Предотвращаем всплытие
+        });
+
+        // Обработчик двойного клика для копирования
+        entryEl.addEventListener('dblclick', function(e) {
+            // Копируем текст только этой строки
+            navigator.clipboard.writeText(this.dataset.fullText)
+                .then(() => {
+                    copyToast.textContent = translations[currentLang].copied_toast;
+                    copyToast.classList.add('show');
+                    setTimeout(() => copyToast.classList.remove('show'), 2000);
+                })
+                .catch(err => console.error('Copy failed:', err));
+            e.stopPropagation(); // Предотвращаем всплытие
+        });
+
+        outputText.appendChild(entryEl);
+    });
 }
 
 // Слушатели событий для фильтров
@@ -521,26 +585,6 @@ toggleStatsBtn.addEventListener('click', () => {
         chartWrapper.classList.add('hidden-chart-wrapper');
         toggleStatsBtn.querySelector('.material-label').textContent = translations[currentLang].show_stats;
     }
-});
-
-
-// Копирование текста в буфер обмена
-outputText.addEventListener('click', () => {
-    if (outputText.textContent === translations[currentLang].upload_log_prompt ||
-        outputText.textContent === translations[currentLang].no_results) { // Also check for no_results
-        return;
-    }
-    navigator.clipboard.writeText(outputText.textContent)
-        .then(() => {
-            copyToast.classList.add('show');
-            setTimeout(() => {
-                copyToast.classList.remove('show');
-            }, 2000);
-        })
-        .catch(err => {
-            console.error('Failed to copy: ', err);
-            alert(translations[currentLang].copy_error);
-        });
 });
 
 // История загрузок

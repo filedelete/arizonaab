@@ -41,6 +41,7 @@ const translations = {
     no_records_found_history: 'История загрузок пуста.',
 	history_heading: 'Історія завантажень',
    history_heading: 'История загрузок',
+    no_results: 'Нет результатов',
    no_records_found_history: 'История загрузок пуста.'
   },
   'uk': {
@@ -60,6 +61,7 @@ const translations = {
     action_warning_given: 'Виніс догану гравцю',
     action_warning_removed: 'Зняв догану з гравця',
     action_account_replenished: 'Поповнив рахунок організації',
+	no_results: 'Немає результатів',
     action_bonus_issued: 'Видав премію',
     action_interview_scheduled: 'Призначив співбесіду',
     action_interview_cancelled: 'Скасував співбесіду',
@@ -99,6 +101,7 @@ const translations = {
     action_rank_changed: 'Changed player\'s rank',
     action_tag_set: 'Set player\'s tag',
     action_warehouse_opened: 'Opened organization warehouse',
+	no_results: 'No results found',
     action_warehouse_closed: 'Closed organization warehouse',
     action_warning_given: 'Issued warning to player',
     action_warning_removed: 'Removed warning from player',

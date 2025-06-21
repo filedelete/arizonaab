@@ -740,6 +740,137 @@ body.light-theme #radio-player:hover {
 body.light-theme #radio-player:focus {
   box-shadow: 0 0 20px #1976d2;
 }
+/* Стили для вывода логов в одну строку */
+#output-text .log-entry {
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background-color: rgba(30, 30, 30, 0.5);
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#output-text .log-entry:hover {
+    background-color: rgba(50, 50, 50, 0.7);
+    white-space: normal;
+}
+
+#output-text .timestamp {
+    color: #b0bec5;
+    font-size: 0.9em;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+#output-text .action {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#output-text .log-entry:hover .action {
+    white-space: normal;
+}
+
+/* Стили для светлой темы */
+body.light-theme #output-text .log-entry {
+    background-color: rgba(240, 240, 240, 0.7);
+}
+
+body.light-theme #output-text .log-entry:hover {
+    background-color: rgba(220, 220, 220, 0.7);
+}
+
+body.light-theme #output-text .timestamp {
+    color: #666;
+}
+/* Добавим в конец файла */
+.output-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Стили для строк лога */
+/* Обновленные стили для строк лога */
+.log-entry {
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: rgba(30, 30, 30, 0.3);
+  border: 1px solid transparent;
+}
+
+.log-entry:hover {
+  background-color: rgba(50, 50, 50, 0.5);
+  transform: translateY(-1px);
+}
+
+.log-entry.active {
+  background-color: rgba(66, 165, 245, 0.2);
+  border: 1px solid rgba(66, 165, 245, 0.5);
+  box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+  transform: scale(1.01);
+}
+
+/* Для светлой темы */
+body.light-theme .log-entry {
+  background-color: rgba(240, 240, 240, 0.5);
+  color: #1e1e1e;
+}
+
+body.light-theme .log-entry:hover {
+  background-color: rgba(220, 220, 220, 0.7);
+}
+
+body.light-theme .log-entry.active {
+  background-color: rgba(25, 118, 210, 0.15);
+  border: 1px solid rgba(25, 118, 210, 0.4);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+}
+
+.timestamp {
+  color: #b0bec5;
+  font-size: 0.9em;
+  margin-right: 10px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+body.light-theme .timestamp {
+  color: #666;
+}
+
+.action {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Стиль для сообщения "Нет результатов" */
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #b0bec5;
+  font-style: italic;
+  font-size: 1.1em;
+}
+
+body.light-theme .no-results {
+  color: #666;
+}
 
 
 
