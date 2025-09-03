@@ -7,83 +7,49 @@ const outputText = $('output-text');
 const toggleThemeBtn = $('toggle-theme');
 const languageIconsContainer = $('language-icons');
 const copyToast = $('copy-toast');
-const actionsChartCanvas = $('actionsChart'); // Canvas для графика
-const chartLegendContainer = $('chart-legend'); // Контейнер для легенды
-const toggleStatsBtn = $('toggle-stats'); // Кнопка переключения статистики
-const chartWrapper = $('chart-wrapper'); // Обертка для графика и легенды
-const historyList = $('history-list'); // Список для истории загрузок
-const historyHeading = $('history-heading'); // Заголовок истории
+const actionsChartCanvas = $('actionsChart');
+const chartLegendContainer = $('chart-legend');
+const toggleStatsBtn = $('toggle-stats');
+const chartWrapper = $('chart-wrapper');
+const historyList = $('history-list');
+const historyHeading = $('history-heading');
 const fileUploadToast = $('file-upload-toast');
 
-// Изменено: logData теперь будет содержать ОБЪЕДИНЕННЫЕ данные из всех загруженных файлов.
 let logData = [];
 let isDarkTheme = true;
 let currentLang = 'ru';
-let actionsChart; // Объявляем переменную для экземпляра Chart.js
-let isStatsVisible = false; // Состояние видимости статистики
-let legendObserver; // Объявляем MutationObserver
-// Изменено: uploadedFilesHistory теперь будет хранить массив объектов, каждый из которых представляет загруженный файл.
-let uploadedFilesHistory = []; // Массив для хранения истории загруженных файлов
-let activeHistoryItemIndex = -1; // Индекс текущего выделенного элемента истории (в uploadedFilesHistory)
+let actionsChart;
+let isStatsVisible = false;
+let legendObserver;
+let uploadedFilesHistory = [];
+let activeHistoryItemIndex = -1;
 
+// Обновленный объект colors с добавлением недостающих цветов
 const colors = {
-  "Все действия": "#d0d0d0",
-  "Принял игрока в организацию": "#4CAF50", // Green
-  "Уволил игрока": "#F44336", // Red
-  "Подтверждает участие на мероприятие фракции": "#2196F3", // Blue
-  "Изменил ранг игрока": "#FFEB3B", // Yellow
-  "Установил игроку тег": "#9C27B0", // Purple
-  "Открыл склад организации": "#FF9800", // Orange
-  "Закрыл склад организации": "#795548", // Brown
-  "Дал выговор игроку": "#E91E63", // Pink
-  "Снял выговор с игрока": "#00BCD4", // Cyan
-  "Пополнил счет организации": "#8BC34A", // Light Green
-  "Выдал премию": "#FFC107", // Amber
-  "Назначил собеседование": "#673AB7", // Deep Purple
-  "Отменил собеседование": "#B0BEC5", // Blue Grey
-  "Выпустил заключенного": "#607D8B", // Slate Grey
-  "Повысил срок заключенному": "#C62828", // Dark Red
-  // Добавьте другие действия и цвета по мере необходимости
+    "all_actions": "#d0d0d0",
+    "action_admitted": "#4CAF50",
+    "action_fired": "#F44336",
+    "action_event_confirmed": "#2196F3",
+    "action_rank_changed": "#FFEB3B",
+    "action_tag_set": "#9C27B0",
+    "action_warehouse_opened": "#FF9800",
+    "action_warehouse_closed": "#795548",
+    "action_warning_given": "#E91E63",
+    "action_warning_removed": "#00BCD4",
+    "action_account_replenished": "#8BC34A",
+    "action_account_withdrawn": "#FF5722", // Новый цвет для снятия со счета
+    "action_bonus_issued": "#FFC107",
+    "action_interview_scheduled": "#673AB7",
+    "action_interview_cancelled": "#B0BEC5",
+    "action_prisoner_released": "#607D8B",
+    "action_prisoner_term_increased": "#C62828"
 };
-function getActionColor(actionText) {
-    // Находим цвет по полному тексту действия
-    for (const [action, color] of Object.entries(colors)) {
-        if (actionText.includes(action)) {
-            return color;
-        }
-    }
-    
-    // Если точного совпадения нет, ищем по ключевым словам
-    const actionKeywords = [
-        { keyword: "принял игрока", color: "#4CAF50" },
-        { keyword: "уволил игрока", color: "#F44336" },
-        { keyword: "подтверждает участие", color: "#2196F3" },
-        { keyword: "изменил ранг", color: "#FFEB3B" },
-        { keyword: "установил игроку тег", color: "#9C27B0" }, // Добавлено полное совпадение
-        { keyword: "установил игроку", color: "#9C27B0" }, // Добавлено частичное совпадение
-        { keyword: "открыл склад", color: "#FF9800" },
-        { keyword: "закрыл склад", color: "#795548" },
-        { keyword: "дал выговор", color: "#E91E63" },
-        { keyword: "снял выговор", color: "#00BCD4" },
-        { keyword: "пополнил счет", color: "#8BC34A" },
-        { keyword: "выдал премию", color: "#FFC107" },
-        { keyword: "назначил собеседование", color: "#673AB7" },
-        { keyword: "отменил собеседование", color: "#B0BEC5" },
-        { keyword: "выпустил заключенного", color: "#607D8B" },
-        { keyword: "повысил срок", color: "#C62828" }
-    ];
-    
-    for (const { keyword, color } of actionKeywords) {
-        if (actionText.toLowerCase().includes(keyword)) {
-            return color;
-        }
-    }
-    
-    return "#d0d0d0"; // Цвет по умолчанию
+
+// Обновленная функция getActionColor
+function getActionColor(actionId) {
+    return colors[actionId] || "#d0d0d0";
 }
 
-
-// Вспомогательная функция для получения текста действия по его идентификатору (для select'ов)
 const getActionTextById = (actionId) => {
     const selectedTranslation = translations[currentLang];
     for (const key in selectedTranslation) {
@@ -94,7 +60,6 @@ const getActionTextById = (actionId) => {
     return '';
 };
 
-// Функция для обновления текста на странице в зависимости от выбранного языка
 function updateContent() {
     const elements = document.querySelectorAll('[data-key]');
     elements.forEach(el => {
@@ -104,93 +69,122 @@ function updateContent() {
         }
     });
 
-    // Обновление опций в action-select
     const actionSelectElement = $('action-select');
-    const selectedActionKey = actionSelectElement.options[actionSelectElement.selectedIndex]?.getAttribute('data-key') || 'all_actions'; // Сохраняем data-key текущего выбора
-    actionSelectElement.innerHTML = ''; // Очищаем существующие опции
+    const selectedActionKey = actionSelectElement.options[actionSelectElement.selectedIndex]?.getAttribute('data-key') || 'all_actions';
+    actionSelectElement.innerHTML = '';
 
-    // Добавляем опцию "Все действия"
     let allActionsOption = document.createElement('option');
     allActionsOption.textContent = translations[currentLang].all_actions;
     allActionsOption.setAttribute('data-key', 'all_actions');
+    allActionsOption.value = 'all_actions';
     actionSelectElement.appendChild(allActionsOption);
 
-    // Добавляем остальные действия
     const actionKeywords = [
         'action_admitted', 'action_fired', 'action_event_confirmed', 'action_rank_changed',
         'action_tag_set', 'action_warehouse_opened', 'action_warehouse_closed',
         'action_warning_given', 'action_warning_removed', 'action_account_replenished',
-        'action_bonus_issued', 'action_interview_scheduled', 'action_interview_cancelled',
-        'action_prisoner_released', 'action_prisoner_term_increased'
+        'action_account_withdrawn', 'action_bonus_issued', 'action_interview_scheduled', 
+        'action_interview_cancelled', 'action_prisoner_released', 'action_prisoner_term_increased'
     ];
     actionKeywords.forEach(key => {
         if (translations[currentLang][key]) {
             let option = document.createElement('option');
             option.textContent = translations[currentLang][key];
-            option.value = translations[currentLang][key]; // Значение опции - переведенный текст
+            option.value = key;
             option.setAttribute('data-key', key);
             actionSelectElement.appendChild(option);
         }
     });
-    // Восстанавливаем предыдущий выбор действия
+    
     actionSelectElement.querySelectorAll('option').forEach(option => {
         if (option.getAttribute('data-key') === selectedActionKey) {
             option.selected = true;
         }
     });
 
-
-    // Обновление опций в time-select
     const timeSelectElement = $('time-select');
-    const selectedTimeKey = timeSelectElement.options[timeSelectElement.selectedIndex]?.getAttribute('data-key') || 'period_all'; // Сохраняем data-key текущего выбора
+    const selectedTimeKey = timeSelectElement.options[timeSelectElement.selectedIndex]?.getAttribute('data-key') || 'period_all';
     timeSelectElement.innerHTML = `
-        <option data-key="period_all">${translations[currentLang].period_all}</option>
-        <option data-key="period_day">${translations[currentLang].period_day}</option>
-        <option data-key="period_week">${translations[currentLang].period_week}</option>
-        <option data-key="period_2weeks">${translations[currentLang].period_2weeks}</option>
-        <option data-key="period_month">${translations[currentLang].period_month}</option>
+        <option data-key="period_all" value="all">${translations[currentLang].period_all}</option>
+        <option data-key="period_day" value="day">${translations[currentLang].period_day}</option>
+        <option data-key="period_week" value="week">${translations[currentLang].period_week}</option>
+        <option data-key="period_2weeks" value="2weeks">${translations[currentLang].period_2weeks}</option>
+        <option data-key="period_month" value="month">${translations[currentLang].period_month}</option>
+        <option data-key="period_2months" value="2months">${translations[currentLang].period_2months}</option>
+        <option data-key="period_3months" value="3months">${translations[currentLang].period_3months}</option>
+        <option data-key="period_year" value="year">${translations[currentLang].period_year}</option>
     `;
-    // Восстанавливаем предыдущий выбор периода
+    
     timeSelectElement.querySelectorAll('option').forEach(option => {
         if (option.getAttribute('data-key') === selectedTimeKey) {
             option.selected = true;
         }
     });
 
-    // Обновляем placeholder для input'а никнейма
     $('nickname-input').placeholder = translations[currentLang].enter_nickname_placeholder || "Введите никнейм...";
 }
 
-// Загрузка языка по умолчанию и при изменении
+// Обновленная функция extractActionId с добавлением недостающих действий
+function extractActionId(actionString) {
+    const lower = actionString.toLowerCase();
+
+    const actionKeywords = [
+        { keyword: "назначил собеседование", id: "action_interview_scheduled" },
+        { keyword: "отменил собеседование", id: "action_interview_cancelled" },
+        { keyword: "подтверждает участие", id: "action_event_confirmed" },
+        { keyword: "принял игрока", id: "action_admitted" },
+        { keyword: "уволил игрока", id: "action_fired" },
+        { keyword: "изменил ранг", id: "action_rank_changed" },
+        { keyword: "установил игроку тег", id: "action_tag_set" },
+        { keyword: "открыл склад", id: "action_warehouse_opened" },
+        { keyword: "закрыл склад", id: "action_warehouse_closed" },
+        { keyword: "дал выговор", id: "action_warning_given" },
+        { keyword: "снял выговор", id: "action_warning_removed" },
+        { keyword: "пополнил счет", id: "action_account_replenished" },
+        { keyword: "снял со счета", id: "action_account_withdrawn" }, // Новое действие
+        { keyword: "выдал премию", id: "action_bonus_issued" },
+        { keyword: "выпустил заключенного", id: "action_prisoner_released" },
+        { keyword: "повысил срок", id: "action_prisoner_term_increased" }
+    ];
+
+    for (const { keyword, id } of actionKeywords) {
+        if (lower.includes(keyword)) {
+            return id;
+        }
+    }
+
+    return "all_actions";
+}
+
+// Обновленная функция extractActionDetails
+function extractActionDetails(actionString) {
+    const actionId = extractActionId(actionString);
+    return translations[currentLang][actionId] || translations[currentLang].all_actions;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     currentLang = localStorage.getItem('lang') || 'ru';
     isDarkTheme = localStorage.getItem('theme') === 'dark';
-    applyTheme(isDarkTheme); // Применяем сохраненную тему
+    applyTheme(isDarkTheme);
 
     updateContent();
     loadHistoryFromLocalStorage();
-    // Применяем фильтры при загрузке страницы, чтобы обновить отображение
-    // После загрузки истории, logData будет содержать данные из истории.
-    // applyFilters() будет вызвана внутри loadHistoryFromLocalStorage()
-    // или при инициализации, если история пуста.
     if (uploadedFilesHistory.length === 0) {
-        applyFilters(); // Применяем фильтры только если история пуста, иначе loadHistoryFromLocalStorage это сделает
+        applyFilters();
     }
 });
 
-// Переключение языка
 languageIconsContainer.addEventListener('click', e => {
     if (e.target.tagName === 'BUTTON') {
         currentLang = e.target.dataset.lang;
         localStorage.setItem('lang', currentLang);
         updateContent();
-        applyFilters(); // Обновляем фильтры, так как тексты действий могли измениться
-        updateChart(logData); // Обновляем график
-        displayHistory(); // Обновляем историю
+        applyFilters();
+        updateChart(logData);
+        displayHistory();
     }
 });
 
-// Переключение темы
 toggleThemeBtn.addEventListener('click', () => {
     isDarkTheme = !isDarkTheme;
     applyTheme(isDarkTheme);
@@ -211,53 +205,6 @@ function applyTheme(isDark) {
     }
 }
 
-// Извлечение типа действия
-function extractActionDetails(actionString) {
-    const selectedTranslation = translations[currentLang];
-    for (const key in selectedTranslation) {
-        if (key.startsWith('action_')) {
-            const translatedAction = selectedTranslation[key];
-            // Используем includes для более гибкого соответствия
-            if (actionString.includes(translatedAction)) {
-                return translatedAction;
-            }
-        }
-    }
-    // Если точного совпадения нет, пытаемся найти по ключевым словам из списка actionKeywords в translations.js
-    const actionKeywords = [
-        { keyword: "принял игрока", label_key: "action_admitted" },
-        { keyword: "уволил игрока", label_key: "action_fired" },
-        { keyword: "подтверждает участие на мероприятие фракции", label_key: "action_event_confirmed" },
-        { keyword: "изменил ранг игрока", label_key: "action_rank_changed" },
-         { keyword: "установил игроку тег", label_key: "action_tag_set" },
-        { keyword: "установил игроку", label_key: "action_tag_set" }, // Более общее совпадение
-        { keyword: "установил тег", label_key: "action_tag_set" },    // Альтернативная формулировка
-        { keyword: "открыл общак", label_key: "action_warehouse_opened" },
-        { keyword: "закрыл общак", label_key: "action_warehouse_closed" },
-        { keyword: "дал выговор", label_key: "action_warning_given" },
-        { keyword: "снял выговор", label_key: "action_warning_removed" },
-        { keyword: "пополнил счет организации", label_key: "action_account_replenished" },
-        { keyword: "выдал премию", label_key: "action_bonus_issued" },
-        { keyword: "назначил собеседование", label_key: "action_interview_scheduled" },
-        { keyword: "отменил собеседование", label_key: "action_interview_cancelled" },
-        { keyword: "выпустил заключенного", label_key: "action_prisoner_released" },
-        { keyword: "повысил срок заключенному", label_key: "action_prisoner_term_increased" }
-    ];
-
-    const lowerCaseActionString = actionString.toLowerCase();
-    for (const actionDef of actionKeywords) {
-        if (lowerCaseActionString.includes(actionDef.keyword.toLowerCase())) {
-            return translations[currentLang][actionDef.label_key] || actionDef.keyword;
-        }
-    }
-    return translations[currentLang].all_actions; // По умолчанию, если не найдено
-}
-
-// Очищаем текущие данные лога и историю перед загрузкой новых файлов
-  logData = [];
-  uploadedFilesHistory = [];
-  
-// Обработка загрузки файлов
 fileInput.addEventListener('change', async e => {
     console.log("File input change event triggered.");
     const files = e.target.files;
@@ -287,17 +234,16 @@ fileInput.addEventListener('change', async e => {
                             return null;
                         }
 
-                        // Усиленное регулярное выражение
-                        const m = line.match(/^\W*(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)$/);
+                        const m = line.match(/^\s*\d+\s*\|\s*(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s*→?\s*(.*)$/);
 
                         if (m) {
                             const timestamp = m[1];
                             const actionText = m[2];
-                            // console.log("Parsed line (timestamp, actionText):", { timestamp, actionText }); // Отключено для уменьшения спама в консоли
+
+                            const cleanAction = actionText.replace(/^Игрок\s+[A-Za-z_]+(\s*\([^)]+\))?\s*/i, "").trim();
 
                             let detectedNicknames = [];
-                            // Более универсальный regex для никнеймов, который также захватывает никнеймы после "Игрок:", "Лидер:", "игроку", "с игрока", "ник:"
-                            const nicknameRegex = /(?:Лидер|игроку|Игрок|с игрока|ник):\s*([A-Za-z_]+)/g;
+                            const nicknameRegex = /(?:Лидер|игроку|Игрок|с игрока|ник|фракции):\s*([A-Za-z_]+)/g;
                             let nicknameMatch;
                             while ((nicknameMatch = nicknameRegex.exec(actionText)) !== null) {
                                 detectedNicknames.push(nicknameMatch[1]);
@@ -308,10 +254,10 @@ fileInput.addEventListener('change', async e => {
                                 timestamp: timestamp,
                                 action: actionText,
                                 nicknames: combinedNicknames,
-                                type: extractActionDetails(actionText) // Определяем тип действия сразу при парсинге
+                                type: extractActionDetails(cleanAction),
+                                typeId: extractActionId(cleanAction)
                             };
                         } else {
-                            // console.warn("Line did not match regex:", line); // Отключено для уменьшения спама в консоли
                             return null;
                         }
                     })
@@ -335,8 +281,6 @@ fileInput.addEventListener('change', async e => {
     try {
         const results = await Promise.all(promises);
         
-        // --- ИЗМЕНЕНИЕ ЛОГИКИ ДЛЯ МУЛЬТИЗАГРУЗКИ В ИСТОРИИ ---
-        // Каждый загруженный файл добавляем как отдельный элемент в историю
         results.forEach(result => {
             uploadedFilesHistory.push({
                 name: result.name,
@@ -345,27 +289,22 @@ fileInput.addEventListener('change', async e => {
             });
         });
         
-        // Устанавливаем активный элемент истории на последний загруженный файл
         activeHistoryItemIndex = uploadedFilesHistory.length - 1;
-        // Загружаем данные последнего добавленного файла в logData
         logData = uploadedFilesHistory[activeHistoryItemIndex].parsedLogData;
         
         console.log(`Successfully processed ${results.length} files. Last loaded file has ${logData.length} entries.`);
-        // --- КОНЕЦ ИЗМЕНЕНИЯ ЛОГИКИ ---
 
         saveHistoryToLocalStorage();
-        displayHistory(); // Обновить список истории
-        applyFilters(); // Применить фильтры к текущим данным (logData)
-        fileInput.value = ''; // Очищаем input для возможности повторной загрузки тех же файлов
+        displayHistory();
+        applyFilters();
+        fileInput.value = '';
 
-        // <--- ДОБАВЛЕНИЕ УВЕДОМЛЕНИЯ ОБ УСПЕШНОЙ ЗАГРУЗКЕ
         console.log('Attempting to show file upload toast:', fileUploadToast);
-		fileUploadToast.textContent = translations[currentLang].file_uploaded_success;
+        fileUploadToast.textContent = translations[currentLang].file_uploaded_success;
         fileUploadToast.classList.add('show');
         setTimeout(() => {
             fileUploadToast.classList.remove('show');
         }, 5000);
-        // ДОБАВЛЕНИЕ УВЕДОМЛЕНИЯ ОБ УСПЕШНОЙ ЗАГРУЗКЕ --->
 
     } catch (error) {
         console.error("Error processing files in Promise.all:", error);
@@ -373,53 +312,43 @@ fileInput.addEventListener('change', async e => {
     }
 });
 
-
-// Применение фильтров и отображение результатов
 function applyFilters() {
     console.log("Applying filters...");
-    let filteredData = logData; // Начинаем с текущих данных в logData
+    let filteredData = logData;
 
     const selectedAction = actionSelect.value;
-    const selectedTimePeriod = timeSelect.options[timeSelect.selectedIndex].getAttribute('data-key'); // Получаем data-key
+    const selectedTimePeriod = timeSelect.value;
     const nicknameFilter = nicknameInput.value.toLowerCase().trim();
 
-    // Фильтрация по действию
-    // Убедимся, что entry.type уже установлен из extractActionDetails при парсинге
-    if (selectedAction !== translations[currentLang].all_actions) {
-        filteredData = filteredData.filter(entry => entry.type === selectedAction);
+    if (selectedAction !== 'all_actions') {
+        filteredData = filteredData.filter(entry => entry.typeId === selectedAction);
     }
 
-    // Фильтрация по времени
     const now = new Date();
     let cutoff = 0;
-    if (selectedTimePeriod === 'period_day') {
+    if (selectedTimePeriod === 'day') {
         cutoff = now.setDate(now.getDate() - 1);
-    } else if (selectedTimePeriod === 'period_week') {
+    } else if (selectedTimePeriod === 'week') {
         cutoff = now.setDate(now.getDate() - 7);
-    } else if (selectedTimePeriod === 'period_2weeks') {
+    } else if (selectedTimePeriod === '2weeks') {
         cutoff = now.setDate(now.getDate() - 14);
-    } else if (selectedTimePeriod === 'period_month') {
+    } else if (selectedTimePeriod === 'month') {
         cutoff = now.setMonth(now.getMonth() - 1);
-    } else if (selectedTimePeriod === 'period_2months') { // Добавлены из index.html
+    } else if (selectedTimePeriod === '2months') {
         cutoff = now.setMonth(now.getMonth() - 2);
-    } else if (selectedTimePeriod === 'period_3months') { // Добавлены из index.html
+    } else if (selectedTimePeriod === '3months') {
         cutoff = now.setMonth(now.getMonth() - 3);
-    } else if (selectedTimePeriod === 'period_year') { // Добавлены из index.html
+    } else if (selectedTimePeriod === 'year') {
         cutoff = now.setFullYear(now.getFullYear() - 1);
     }
 
-
     filteredData = filteredData.filter(entry => {
         const entryTime = new Date(entry.timestamp).getTime();
-        // entry.type уже должен быть установлен при парсинге.
-        // entry.type = extractActionDetails(entry.action); // Эту строку можно убрать, если type устанавливается при парсинге
         return entryTime >= cutoff;
     });
 
-    // Фильтрация по никнейму
     if (nicknameFilter) {
         filteredData = filteredData.filter(entry => {
-            // Проверяем и action, и nicknames
             return (entry.action && entry.action.toLowerCase().includes(nicknameFilter)) ||
                    (entry.nicknames && entry.nicknames.includes(nicknameFilter));
         });
@@ -430,9 +359,8 @@ function applyFilters() {
     console.log("Filters applied. Filtered entries:", filteredData.length);
 }
 
-// Заменяем существующую функцию displayResults
 function displayResults(data) {
-    outputText.innerHTML = ''; // Очищаем контейнер
+    outputText.innerHTML = '';
     
     if (data.length === 0) {
         const noResults = document.createElement('div');
@@ -442,35 +370,26 @@ function displayResults(data) {
         return;
     }
 
-    // Сортировка от новых к старым
     const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
     sortedData.forEach(entry => {
         const entryEl = document.createElement('div');
         entryEl.className = 'log-entry';
-        entryEl.style.color = getActionColor(entry.type);
+        entryEl.style.color = getActionColor(entry.typeId);
         
-        // Форматируем текст для отображения
         const textContent = `${entry.timestamp} ${entry.action}`;
         entryEl.textContent = textContent;
-        
-        // Сохраняем полный текст строки в dataset
         entryEl.dataset.fullText = textContent;
 
-        // Обработчик клика для выделения
         entryEl.addEventListener('click', function(e) {
-            // Снимаем выделение со всех элементов
             document.querySelectorAll('.log-entry').forEach(el => {
                 el.classList.remove('active');
             });
-            // Выделяем текущий элемент
             this.classList.add('active');
-            e.stopPropagation(); // Предотвращаем всплытие
+            e.stopPropagation();
         });
 
-        // Обработчик двойного клика для копирования
         entryEl.addEventListener('dblclick', function(e) {
-            // Копируем текст только этой строки
             navigator.clipboard.writeText(this.dataset.fullText)
                 .then(() => {
                     copyToast.textContent = translations[currentLang].copied_toast;
@@ -478,22 +397,20 @@ function displayResults(data) {
                     setTimeout(() => copyToast.classList.remove('show'), 2000);
                 })
                 .catch(err => console.error('Copy failed:', err));
-            e.stopPropagation(); // Предотвращаем всплытие
+            e.stopPropagation();
         });
 
         outputText.appendChild(entryEl);
     });
 }
 
-// Слушатели событий для фильтров
 actionSelect.addEventListener('change', applyFilters);
 timeSelect.addEventListener('change', applyFilters);
-nicknameInput.addEventListener('input', applyFilters); // Использование 'input' для живого поиска
+nicknameInput.addEventListener('input', applyFilters);
 
-// Статистика
 function updateChart(data) {
     if (actionsChart) {
-        actionsChart.destroy(); // Уничтожаем старый график, если существует
+        actionsChart.destroy();
     }
 
     if (!data || data.length === 0) {
@@ -503,18 +420,19 @@ function updateChart(data) {
 
     const actionCounts = {};
     data.forEach(entry => {
-        const actionType = entry.type;
+        const actionType = entry.typeId;
         actionCounts[actionType] = (actionCounts[actionType] || 0) + 1;
     });
 
     const labels = Object.keys(actionCounts);
     const counts = Object.values(actionCounts);
-    const backgroundColors = labels.map(label => colors[label] || '#9E9E9E');
+    const displayLabels = labels.map(id => translations[currentLang][id] || id);
+    const backgroundColors = labels.map(id => colors[id] || '#9E9E9E');
 
     actionsChart = new Chart(actionsChartCanvas, {
         type: 'pie',
         data: {
-            labels: labels,
+            labels: displayLabels,
             datasets: [{
                 data: counts,
                 backgroundColor: backgroundColors,
@@ -550,7 +468,7 @@ function updateChart(data) {
         }
     });
 
-    updateChartLegend(labels, backgroundColors, counts);
+    updateChartLegend(displayLabels, backgroundColors, counts);
 }
 
 function updateChartLegend(labels, backgroundColors, counts) {
@@ -574,7 +492,6 @@ function updateChartLegend(labels, backgroundColors, counts) {
     });
 }
 
-// Переключение видимости статистики
 toggleStatsBtn.addEventListener('click', () => {
     isStatsVisible = !isStatsVisible;
     if (isStatsVisible) {
@@ -587,7 +504,6 @@ toggleStatsBtn.addEventListener('click', () => {
     }
 });
 
-// История загрузок
 function saveHistoryToLocalStorage() {
     localStorage.setItem('uploadedFilesHistory', JSON.stringify(uploadedFilesHistory));
 }
@@ -597,24 +513,20 @@ function loadHistoryFromLocalStorage() {
     if (storedHistory) {
         uploadedFilesHistory = JSON.parse(storedHistory);
         
-        // При загрузке истории из localStorage, нам нужно установить активный элемент.
-        // Если история не пуста, по умолчанию выбираем последний загруженный файл.
         if (uploadedFilesHistory.length > 0) {
-            // Если activeHistoryItemIndex был сохранен и валиден, используем его
             if (activeHistoryItemIndex !== -1 && uploadedFilesHistory[activeHistoryItemIndex]) {
                 logData = uploadedFilesHistory[activeHistoryItemIndex].parsedLogData;
             } else {
-                // Иначе, по умолчанию выбираем последний элемент в истории
                 activeHistoryItemIndex = uploadedFilesHistory.length - 1;
                 logData = uploadedFilesHistory[activeHistoryItemIndex].parsedLogData;
             }
         } else {
-            logData = []; // Если история пуста, очищаем logData
+            logData = [];
             activeHistoryItemIndex = -1;
         }
 
         displayHistory();
-        applyFilters(); // Применяем фильтры к данным, загруженным из истории
+        applyFilters();
     }
 }
 
@@ -647,13 +559,12 @@ function displayHistory() {
         const deleteBtn = document.createElement('button');
         deleteBtn.classList.add('delete-history-item');
         deleteBtn.innerHTML = '<span class="material-icons">delete_outline</span>';
-        deleteBtn.title = translations[currentLang].delete_item || "Удалить"; // Fallback title
+        deleteBtn.title = translations[currentLang].delete_item || "Удалить";
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             deleteHistoryItem(index);
         });
         historyItem.appendChild(deleteBtn);
-
 
         historyItem.addEventListener('click', () => {
             console.log(`History item clicked: ${fileEntry.name} (index: ${index})`);
@@ -661,7 +572,7 @@ function displayHistory() {
             historyItem.classList.add('active');
             activeHistoryItemIndex = index;
 
-            logData = fileEntry.parsedLogData; // Переключаем logData на данные выбранного элемента истории
+            logData = fileEntry.parsedLogData;
             console.log("Log data reloaded from history. Entries:", logData.length);
             applyFilters();
         });
@@ -670,25 +581,20 @@ function displayHistory() {
 }
 
 function deleteHistoryItem(indexToDelete) {
-    if (confirm(translations[currentLang].confirm_delete_history || "Вы уверены, что хотите удалить этот элемент истории?")) { // Fallback confirmation
+    if (confirm(translations[currentLang].confirm_delete_history || "Вы уверены, что хотите удалить этот элемент истории?")) {
         uploadedFilesHistory.splice(indexToDelete, 1);
 
         if (activeHistoryItemIndex === indexToDelete) {
-            // Если удалили активный элемент, очищаем logData
             logData = [];
             outputText.textContent = translations[currentLang].upload_log_prompt;
-            activeHistoryItemIndex = -1; // Сброс активного элемента
-            updateChart([]); // Очистка графика
+            activeHistoryItemIndex = -1;
+            updateChart([]);
         } else if (activeHistoryItemIndex > indexToDelete) {
-            // Если активный элемент был после удаленного, сдвигаем индекс
             activeHistoryItemIndex--;
         }
 
-        saveHistoryToLocalStorage(); // Сохранить изменения в Local Storage
-        displayHistory(); // Обновить отображение истории
-
-        // После удаления, если logData была очищена, applyFilters ничего не покажет.
-        // Если logData не была очищена (т.е. активный элемент не удалялся), то фильтры применятся к текущей logData.
+        saveHistoryToLocalStorage();
+        displayHistory();
         applyFilters();
     }
 }
