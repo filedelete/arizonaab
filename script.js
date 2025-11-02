@@ -1,3 +1,26 @@
+// Функция для отладки
+function debugData(data) {
+    console.log("=== DEBUG DATA ===");
+    console.log("Total entries:", data.length);
+    
+    // Статистика по типам действий
+    const actionStats = {};
+    data.forEach(entry => {
+        actionStats[entry.typeId] = (actionStats[entry.typeId] || 0) + 1;
+    });
+    console.log("Action statistics:", actionStats);
+    
+    // Покажем первые 5 записей
+    data.slice(0, 5).forEach((entry, i) => {
+        console.log(`Entry ${i+1}:`, {
+            timestamp: entry.timestamp,
+            typeId: entry.typeId,
+            action: entry.action.substring(0, 50) + '...',
+            nicknames: entry.nicknames
+        });
+    });
+    console.log("===================");
+}
 const $ = id => document.getElementById(id);
 const fileInput = $('file-input');
 const nicknameInput = $('nickname-input');
@@ -69,6 +92,7 @@ function updateContent() {
         }
     });
 
+    // Обновление actionSelect
     const actionSelectElement = $('action-select');
     const selectedActionKey = actionSelectElement.options[actionSelectElement.selectedIndex]?.getAttribute('data-key') || 'all_actions';
     actionSelectElement.innerHTML = '';
@@ -96,35 +120,45 @@ function updateContent() {
         }
     });
     
+    // Восстанавливаем выбранное действие
     actionSelectElement.querySelectorAll('option').forEach(option => {
         if (option.getAttribute('data-key') === selectedActionKey) {
             option.selected = true;
         }
     });
 
+    // ИСПРАВЛЕННАЯ ЧАСТЬ: Правильное обновление селектора времени
     const timeSelectElement = $('time-select');
-    const selectedTimeKey = timeSelectElement.options[timeSelectElement.selectedIndex]?.getAttribute('data-key') || 'period_all';
-    timeSelectElement.innerHTML = `
-        <option data-key="period_all" value="all">${translations[currentLang].period_all}</option>
-        <option data-key="period_day" value="day">${translations[currentLang].period_day}</option>
-        <option data-key="period_week" value="week">${translations[currentLang].period_week}</option>
-        <option data-key="period_2weeks" value="2weeks">${translations[currentLang].period_2weeks}</option>
-        <option data-key="period_month" value="month">${translations[currentLang].period_month}</option>
-        <option data-key="period_2months" value="2months">${translations[currentLang].period_2months}</option>
-        <option data-key="period_3months" value="3months">${translations[currentLang].period_3months}</option>
-        <option data-key="period_year" value="year">${translations[currentLang].period_year}</option>
-    `;
+    const selectedTimeValue = timeSelectElement.value || 'all'; // Сохраняем текущее значение
     
-    timeSelectElement.querySelectorAll('option').forEach(option => {
-        if (option.getAttribute('data-key') === selectedTimeKey) {
-            option.selected = true;
-        }
+    timeSelectElement.innerHTML = '';
+    
+    const timeOptions = [
+        { value: 'all', key: 'period_all' },
+        { value: 'day', key: 'period_day' },
+        { value: 'week', key: 'period_week' },
+        { value: '2weeks', key: 'period_2weeks' },
+        { value: 'month', key: 'period_month' },
+        { value: '2months', key: 'period_2months' },
+        { value: '3months', key: 'period_3months' },
+        { value: 'year', key: 'period_year' }
+    ];
+    
+    timeOptions.forEach(optionData => {
+        let option = document.createElement('option');
+        option.value = optionData.value;
+        option.textContent = translations[currentLang][optionData.key] || optionData.key;
+        option.setAttribute('data-key', optionData.key);
+        timeSelectElement.appendChild(option);
     });
+    
+    // Восстанавливаем выбранное значение времени
+    timeSelectElement.value = selectedTimeValue;
 
-    $('nickname-input').placeholder = translations[currentLang].enter_nickname_placeholder || "Введите никнейм...";
+    // Обновляем плейсхолдер никнейма
+    $('nickname-input').placeholder = translations[currentLang].enter_nickname || "Введите никнейм...";
 }
 
-// Обновленная функция extractActionId с добавлением недостающих действий
 function extractActionId(actionString) {
     const lower = actionString.toLowerCase();
 
@@ -135,13 +169,13 @@ function extractActionId(actionString) {
         { keyword: "принял игрока", id: "action_admitted" },
         { keyword: "уволил игрока", id: "action_fired" },
         { keyword: "изменил ранг", id: "action_rank_changed" },
-        { keyword: "установил игроку тег", id: "action_tag_set" },
+        { keyword: "установил игроку", id: "action_tag_set" },
         { keyword: "открыл склад", id: "action_warehouse_opened" },
         { keyword: "закрыл склад", id: "action_warehouse_closed" },
         { keyword: "дал выговор", id: "action_warning_given" },
         { keyword: "снял выговор", id: "action_warning_removed" },
         { keyword: "пополнил счет", id: "action_account_replenished" },
-        { keyword: "снял со счета", id: "action_account_withdrawn" }, // Новое действие
+        { keyword: "снял со счета", id: "action_account_withdrawn" },
         { keyword: "выдал премию", id: "action_bonus_issued" },
         { keyword: "выпустил заключенного", id: "action_prisoner_released" },
         { keyword: "повысил срок", id: "action_prisoner_term_increased" }
@@ -149,10 +183,12 @@ function extractActionId(actionString) {
 
     for (const { keyword, id } of actionKeywords) {
         if (lower.includes(keyword)) {
+            console.log(`Action detected: "${keyword}" -> ${id}`);
             return id;
         }
     }
 
+    console.log("No specific action detected, using all_actions");
     return "all_actions";
 }
 
@@ -169,6 +205,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateContent();
     loadHistoryFromLocalStorage();
+    
+    // Добавляем обработчики событий после загрузки DOM
+    actionSelect.addEventListener('change', applyFilters);
+    timeSelect.addEventListener('change', applyFilters);
+    nicknameInput.addEventListener('input', applyFilters);
+    
     if (uploadedFilesHistory.length === 0) {
         applyFilters();
     }
@@ -234,7 +276,8 @@ fileInput.addEventListener('change', async e => {
                             return null;
                         }
 
-                        const m = line.match(/^\s*\d+\s*\|\s*(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s*→?\s*(.*)$/);
+                        // ИСПРАВЛЕННОЕ РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ
+                        const m = line.match(/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+(.*)$/);
 
                         if (m) {
                             const timestamp = m[1];
@@ -243,10 +286,13 @@ fileInput.addEventListener('change', async e => {
                             const cleanAction = actionText.replace(/^Игрок\s+[A-Za-z_]+(\s*\([^)]+\))?\s*/i, "").trim();
 
                             let detectedNicknames = [];
-                            const nicknameRegex = /(?:Лидер|игроку|Игрок|с игрока|ник|фракции):\s*([A-Za-z_]+)/g;
+                            // Улучшенное регулярное выражение для извлечения никнеймов
+                            const nicknameRegex = /(?:Лидер|игроку|Игрок|с игрока|ник|фракции|игрока|игроком)\s+([A-Za-z_]+(?:_[A-Za-z_]+)*)/gi;
                             let nicknameMatch;
                             while ((nicknameMatch = nicknameRegex.exec(actionText)) !== null) {
-                                detectedNicknames.push(nicknameMatch[1]);
+                                if (nicknameMatch[1] && nicknameMatch[1].length > 1) {
+                                    detectedNicknames.push(nicknameMatch[1]);
+                                }
                             }
                             const combinedNicknames = detectedNicknames.map(n => n.toLowerCase()).join(' ');
 
@@ -258,6 +304,7 @@ fileInput.addEventListener('change', async e => {
                                 typeId: extractActionId(cleanAction)
                             };
                         } else {
+                            console.log("Line doesn't match pattern:", line);
                             return null;
                         }
                     })
@@ -278,6 +325,7 @@ fileInput.addEventListener('change', async e => {
         });
     });
 
+    // Остальной код без изменений...
     try {
         const results = await Promise.all(promises);
         
@@ -299,12 +347,13 @@ fileInput.addEventListener('change', async e => {
         applyFilters();
         fileInput.value = '';
 
-        console.log('Attempting to show file upload toast:', fileUploadToast);
-        fileUploadToast.textContent = translations[currentLang].file_uploaded_success;
-        fileUploadToast.classList.add('show');
-        setTimeout(() => {
-            fileUploadToast.classList.remove('show');
-        }, 5000);
+        if (fileUploadToast) {
+            fileUploadToast.textContent = translations[currentLang].file_uploaded_success;
+            fileUploadToast.classList.add('show');
+            setTimeout(() => {
+                fileUploadToast.classList.remove('show');
+            }, 5000);
+        }
 
     } catch (error) {
         console.error("Error processing files in Promise.all:", error);
@@ -320,67 +369,117 @@ function applyFilters() {
     const selectedTimePeriod = timeSelect.value;
     const nicknameFilter = nicknameInput.value.toLowerCase().trim();
 
+    console.log("Selected action:", selectedAction);
+    console.log("Selected time period:", selectedTimePeriod);
+    console.log("Nickname filter:", nicknameFilter);
+    console.log("Total data before filtering:", logData.length);
+
+    // Фильтрация по действию
     if (selectedAction !== 'all_actions') {
         filteredData = filteredData.filter(entry => entry.typeId === selectedAction);
+        console.log("After action filter:", filteredData.length);
     }
 
-    const now = new Date();
-    let cutoff = 0;
-    if (selectedTimePeriod === 'day') {
-        cutoff = now.setDate(now.getDate() - 1);
-    } else if (selectedTimePeriod === 'week') {
-        cutoff = now.setDate(now.getDate() - 7);
-    } else if (selectedTimePeriod === '2weeks') {
-        cutoff = now.setDate(now.getDate() - 14);
-    } else if (selectedTimePeriod === 'month') {
-        cutoff = now.setMonth(now.getMonth() - 1);
-    } else if (selectedTimePeriod === '2months') {
-        cutoff = now.setMonth(now.getMonth() - 2);
-    } else if (selectedTimePeriod === '3months') {
-        cutoff = now.setMonth(now.getMonth() - 3);
-    } else if (selectedTimePeriod === 'year') {
-        cutoff = now.setFullYear(now.getFullYear() - 1);
+    // Фильтрация по времени (исправленная логика)
+    if (selectedTimePeriod !== 'all') {
+        const now = new Date();
+        let cutoff = new Date(now); // Создаем копию текущей даты
+        
+        switch (selectedTimePeriod) {
+            case 'day':
+                cutoff.setDate(now.getDate() - 1);
+                break;
+            case 'week':
+                cutoff.setDate(now.getDate() - 7);
+                break;
+            case '2weeks':
+                cutoff.setDate(now.getDate() - 14);
+                break;
+            case 'month':
+                cutoff.setMonth(now.getMonth() - 1);
+                break;
+            case '2months':
+                cutoff.setMonth(now.getMonth() - 2);
+                break;
+            case '3months':
+                cutoff.setMonth(now.getMonth() - 3);
+                break;
+            case 'year':
+                cutoff.setFullYear(now.getFullYear() - 1);
+                break;
+        }
+
+        console.log("Cutoff date:", cutoff);
+        
+        filteredData = filteredData.filter(entry => {
+            const entryTime = new Date(entry.timestamp);
+            // Добавляем проверку на валидность даты
+            if (isNaN(entryTime.getTime())) {
+                console.warn("Invalid timestamp:", entry.timestamp);
+                return false;
+            }
+            const isWithinPeriod = entryTime >= cutoff;
+            return isWithinPeriod;
+        });
+        console.log("After time filter:", filteredData.length);
     }
 
-    filteredData = filteredData.filter(entry => {
-        const entryTime = new Date(entry.timestamp).getTime();
-        return entryTime >= cutoff;
-    });
-
+    // Фильтрация по никнейму (улучшенная)
     if (nicknameFilter) {
         filteredData = filteredData.filter(entry => {
-            return (entry.action && entry.action.toLowerCase().includes(nicknameFilter)) ||
-                   (entry.nicknames && entry.nicknames.includes(nicknameFilter));
+            const actionLower = entry.action.toLowerCase();
+            const nicknamesLower = entry.nicknames.toLowerCase();
+            
+            return actionLower.includes(nicknameFilter) || 
+                   nicknamesLower.includes(nicknameFilter);
         });
+        console.log("After nickname filter:", filteredData.length);
     }
 
+    console.log("Final filtered entries:", filteredData.length);
     displayResults(filteredData);
     updateChart(filteredData);
-    console.log("Filters applied. Filtered entries:", filteredData.length);
 }
 
 function displayResults(data) {
     outputText.innerHTML = '';
+    
+    console.log("Displaying results:", data.length);
     
     if (data.length === 0) {
         const noResults = document.createElement('div');
         noResults.className = 'no-results';
         noResults.textContent = translations[currentLang].no_results;
         outputText.appendChild(noResults);
+        console.log("No results to display");
         return;
     }
 
-    const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const sortedData = [...data].sort((a, b) => {
+        try {
+            return new Date(b.timestamp) - new Date(a.timestamp);
+        } catch (e) {
+            console.error("Error sorting data:", e);
+            return 0;
+        }
+    });
 
-    sortedData.forEach(entry => {
+    sortedData.forEach((entry, index) => {
         const entryEl = document.createElement('div');
         entryEl.className = 'log-entry';
-        entryEl.style.color = getActionColor(entry.typeId);
         
-        const textContent = `${entry.timestamp} ${entry.action}`;
-        entryEl.textContent = textContent;
-        entryEl.dataset.fullText = textContent;
+        // Получаем цвет для типа действия
+        const color = getActionColor(entry.typeId);
+        
+        // Создаем единый текстовый элемент вместо раздельных
+        const fullText = `${entry.timestamp} ${entry.action}`;
+        entryEl.textContent = fullText;
+        entryEl.style.color = color;
+        
+        entryEl.dataset.fullText = fullText;
+        entryEl.dataset.actionType = entry.typeId;
 
+        // Добавляем обработчики событий
         entryEl.addEventListener('click', function(e) {
             document.querySelectorAll('.log-entry').forEach(el => {
                 el.classList.remove('active');
@@ -402,11 +501,9 @@ function displayResults(data) {
 
         outputText.appendChild(entryEl);
     });
+    
+    console.log("Results displayed successfully");
 }
-
-actionSelect.addEventListener('change', applyFilters);
-timeSelect.addEventListener('change', applyFilters);
-nicknameInput.addEventListener('input', applyFilters);
 
 function updateChart(data) {
     if (actionsChart) {
@@ -414,7 +511,7 @@ function updateChart(data) {
     }
 
     if (!data || data.length === 0) {
-        chartLegendContainer.innerHTML = `<p>${translations[currentLang].no_chart_data}</p>`;
+        chartLegendContainer.innerHTML = `<p>${translations[currentLang].no_chart_data || 'No data available'}</p>`;
         return;
     }
 
@@ -461,9 +558,6 @@ function updateChart(data) {
                         }
                     }
                 }
-            },
-            onResize: function(chart, size) {
-                // ...
             }
         }
     });
@@ -474,7 +568,7 @@ function updateChart(data) {
 function updateChartLegend(labels, backgroundColors, counts) {
     chartLegendContainer.innerHTML = '';
     if (labels.length === 0) {
-        chartLegendContainer.innerHTML = `<p>${translations[currentLang].no_chart_data}</p>`;
+        chartLegendContainer.innerHTML = `<p>${translations[currentLang].no_chart_data || 'No data available'}</p>`;
         return;
     }
 
