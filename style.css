@@ -797,52 +797,66 @@ body.light-theme #output-text .timestamp {
 }
 
 /* Стили для строк лога */
+/* Обновленные стили для строк лога */
 .log-entry {
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    background-color: rgba(30, 30, 30, 0.3);
-    border: 1px solid transparent;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: rgba(30, 30, 30, 0.3);
+  border: 1px solid transparent;
 }
 
 .log-entry:hover {
-    background-color: rgba(50, 50, 50, 0.5);
-    transform: translateY(-1px);
-    white-space: normal;
-    overflow: visible;
-    z-index: 1;
-    position: relative;
+  background-color: rgba(50, 50, 50, 0.5);
+  transform: translateY(-1px);
 }
 
 .log-entry.active {
-    background-color: rgba(66, 165, 245, 0.2);
-    border: 1px solid rgba(66, 165, 245, 0.5);
-    box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
-    transform: scale(1.01);
+  background-color: rgba(66, 165, 245, 0.2);
+  border: 1px solid rgba(66, 165, 245, 0.5);
+  box-shadow: 0 2px 8px rgba(66, 165, 245, 0.3);
+  transform: scale(1.01);
 }
 
 /* Для светлой темы */
 body.light-theme .log-entry {
-    background-color: rgba(240, 240, 240, 0.5);
-    color: #1e1e1e;
+  background-color: rgba(240, 240, 240, 0.5);
+  color: #1e1e1e;
 }
 
 body.light-theme .log-entry:hover {
-    background-color: rgba(220, 220, 220, 0.7);
+  background-color: rgba(220, 220, 220, 0.7);
 }
 
 body.light-theme .log-entry.active {
-    background-color: rgba(25, 118, 210, 0.15);
-    border: 1px solid rgba(25, 118, 210, 0.4);
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+  background-color: rgba(25, 118, 210, 0.15);
+  border: 1px solid rgba(25, 118, 210, 0.4);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+}
+
+.timestamp {
+  color: #b0bec5;
+  font-size: 0.9em;
+  margin-right: 10px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+body.light-theme .timestamp {
+  color: #666;
+}
+
+.action {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Стиль для сообщения "Нет результатов" */
